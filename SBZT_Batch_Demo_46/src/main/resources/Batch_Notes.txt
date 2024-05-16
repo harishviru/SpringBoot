@@ -1,0 +1,35 @@
+		---------------------------------------------
+			Spring Boot : Batch Processing
+			    Demo/Basic Example
+        ---------------------------------------------
+*)Add Depenency : Batch, H2 For Repository (To store batch processing details).
+*) Reader reads data from Source as line by line, until it returns null.
+   [Null indicates no more data to read].
+
+*) BatchStatus is a enum that has possible values:
+  COMPLETED, STARTING, STARTED, STOPPING, STOPPED, FAILED, ABANDONED, UNKNOWN;
+
+---Coding Order-------
+1. Reader class
+2. Processor class
+3. Writer class
+4. Listener class
+5. BatchConfig class(** File name - any name)
+ a. Reader Object
+ b. Procesor Object
+ c. Writer Object
+ d. Listener Object
+ f. StepBuilderFactory Autowired
+ g. Step object
+ h. JobBuilderFactory Autowired
+ i. Job Object
+
+6. JobRunner class
+
+*) On Starting Application, Spring Boot is executing batch processing one time 
+   and after executing Runner class batch processing executed one time.
+   ie total 2 times.
+
+*) To avoid above process add below key in properties file
+   # Do not execute batch on startup
+   spring.batch.job.enabled=false

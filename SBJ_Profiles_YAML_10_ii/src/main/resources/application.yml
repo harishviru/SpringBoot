@@ -1,0 +1,23 @@
+
+my:
+ app:
+  driver: DEFAULT-DRIVER
+  url: DEFAULT-URL
+  
+---
+spring:
+  profiles: qa
+ 
+my:
+ app:
+  driver: QA-DRIVER
+  url: QA-URL  
+
+---
+spring:
+  profiles: prod
+  
+my:
+ app:
+  driver: PROD-DRIVER
+  url: PROD-URL    

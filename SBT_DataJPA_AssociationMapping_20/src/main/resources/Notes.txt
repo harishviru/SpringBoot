@@ -1,0 +1,66 @@
+                       Association Mapping in JPA (HAS-A) 
+					---------------------------------------------------------
+
+ With multiplicity (1...1/1...*/*...1/*...*) 
+----------------------------------------------------- 
+=> Creating Relation between two tables, by using PrimaryKey(PK)-ForeignKey(FK) Concept. 
+=> One Table PK is taken as another table FK to create link b/w table using any multiplicity 
+
+=> 1...* (meaning) = 1 row in one table are connected to many rows in another table 
+
+=> 1...1 Examples:- 
+
+  Person --- VoterId/PanCard/Aadhar 
+
+=> 1...*  
+
+  Person -- BankAccount 
+
+=>  1...* (and) *...1 = *...* 
+
+  Book --- Author 
+
+Note: 
+
+=> Incase of tables link using multiplicity, create FK Column(Extra Column) 
+
+   at many side (* side)  [for 1...*/*...1] 
+
+=> For *...* concept, use 3rd table [Join Table] using two FK Columns 
+
+   JoinColumn : A Fk column which links with 1st table 
+
+   inverseJoinColumn : A Fk column which links with 2nd table. 
+------------------------------------------------------------------------------------ 
+
+        Non-Collection					Collection 
+
+------------------------------------------------------------------------------------ 
+
+1...1                                            1...* 
+
+*...1                                            *...* 
+
+------------------------------------------------------------------------------------ 
+
+=> Association Mapping Implementation Steps:- 
+
+a. Apply HAS-A Relation between classes 
+
+b. Check for Collection Type (or not?),  
+
+    if it is Collection then modify HAS-A variable as Collection variable. 
+
+c. Apply multiplicity Annotation at HAS-A Variable 
+
+  1...1     @ManyToOne  (unique condition) 
+
+  *...1     @ManyToOne 
+
+  1...*     @OneToMany 
+
+  *...*     @ManyToMany 
+
+d. Apply JoinColumn (or) JoinTable at HAS-A Variable level 
+=> Code should be at parent model class (HAS-A variable level) only for any multiplicity. 
+ 

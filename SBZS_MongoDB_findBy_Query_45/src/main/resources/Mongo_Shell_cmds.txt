@@ -1,0 +1,71 @@
+> show collections
+book
+empl_col
+product
+student
+> db.book.find().pretty()
+{
+        "_id" : 101,
+        "title" : "Core Java",
+        "noOfPages" : 180,
+        "author" : "ABC",
+        "btype" : "BackEnd",
+        "_class" : "com.har.journey.model.Book"
+}
+{
+        "_id" : 102,
+        "title" : "Adv Java",
+        "noOfPages" : 220,
+        "author" : "XYZ",
+        "btype" : "BackEnd",
+        "_class" : "com.har.journey.model.Book"
+}
+{
+        "_id" : 103,
+        "title" : "SB Microservice",
+        "noOfPages" : 500,
+        "author" : "ABC",
+        "btype" : "BackEnd",
+        "_class" : "com.har.journey.model.Book"
+}
+{
+        "_id" : 104,
+        "title" : "HTML",
+        "noOfPages" : 280,
+        "author" : "PQR",
+        "btype" : "FrontEnd",
+        "_class" : "com.har.journey.model.Book"
+}
+{
+        "_id" : 105,
+        "title" : "Angular",
+        "noOfPages" : 320,
+        "author" : "ABC",
+        "btype" : "FrontEnd",
+        "_class" : "com.har.journey.model.Book"
+}
+{
+        "_id" : 106,
+        "title" : "React Js",
+        "noOfPages" : 430,
+        "author" : "MNO",
+        "btype" : "FrontEnd",
+        "_class" : "com.har.journey.model.Book"
+}
+{
+        "_id" : 107,
+        "title" : "Hibernate",
+        "noOfPages" : 360,
+        "author" : "PQR",
+        "btype" : "BackEnd",
+        "_class" : "com.har.journey.model.Book"
+}
+{
+        "_id" : 108,
+        "title" : "Oracle",
+        "noOfPages" : 890,
+        "author" : "XYZ",
+        "btype" : "BackEnd",
+        "_class" : "com.har.journey.model.Book"
+}
+>

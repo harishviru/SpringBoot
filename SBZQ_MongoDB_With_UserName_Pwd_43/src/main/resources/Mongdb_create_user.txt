@@ -1,0 +1,24 @@
+> db.createUser({
+...                    user:"mroot",
+...    pwd:"mroot",
+...    roles:["readWrite","dbAdmin"]
+... })
+Successfully added user: { "user" : "mroot", "roles" : [ "readWrite", "dbAdmin" ] }
+> db.getUser("mroot")
+{
+        "_id" : "SBMongo.mroot",
+        "userId" : UUID("a0eb92db-5c6f-4676-b723-2d85c8732020"),
+        "user" : "mroot",
+        "db" : "SBMongo",
+        "roles" : [
+                {
+                        "role" : "readWrite",
+                        "db" : "SBMongo"
+                },
+                {
+                        "role" : "dbAdmin",
+                        "db" : "SBMongo"
+                }
+        ]
+}
+>

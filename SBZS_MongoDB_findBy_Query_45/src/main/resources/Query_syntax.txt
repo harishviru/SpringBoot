@@ -1,0 +1,15 @@
+@Query      : Restriction (Where condition) and Projection (Select Condition)  
+
+Restriction   : It is nothing but applying condition (Where in SQL)
+
+Projection   : Selecting variables/fields instead of  FULL JSON Documet
+
+
+Syntax :
+---------
+i)Only Restriction  (protecting all variables)
+    @Query("{conditions}")
+
+ii)Restriction with Projections
+
+@Query(value ="{conditions}",fields="{display variables}")

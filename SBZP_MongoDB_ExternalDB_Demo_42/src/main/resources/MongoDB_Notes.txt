@@ -1,0 +1,987 @@
+                                                                         MongoDB 
+									 ---------------
+------------------------------------------------------MongoDb Setup-----------------------------------------------------------
+
+Step#1
+Download Link:
+https://www.mongodb.com/try/download/community
+
+Choose Details:
+Version : 3.6
+Platform : Windows
+Package  : MSI
+
+Click on Download
+
+=> Double click => Next > Next > Finish
+*** Do not Install Mongo Compass (uncheck Checkbox)
+---------------------
+Step#2 Set MongoDB Path
+
+S#1 Copy MongoDB Path
+ C:\Program Files\MongoDB\Server\3.6\bin
+S#2 Set Path in Environment Variables
+> My Computer > Right click > choose properties
+> Advanced System Setings > Goto Advanced Option
+> Click on Environment Variable > Goto System variables
+> edit PATH variable > add above MongoDB Path at starting
+> Click OK > Ok > Finish
+
+----------------------------
+Step#3 Commands
+Start MongoDb Server
+
+cmd> mongod
+
+Start MongoDb Client
+
+cmd> mongo
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+++++++++++++++++
+create Database :
++++++++++++++++++
+Syntax :
+-------
+>use <Database_Name>
+
+ex :
+>use mydb
+
+To get/show databases
+--------------------
+>show dbs
+It will display all dbs
+
+To drop database:
+-----------------
+>db.dropDatabase()
+
+
+
+User Managment Methods :
+-------------------------------------
+i)Create User
+>db.createUser()
+Syntax :
+----------
+{
+  user: "<name>",
+  pwd: passwordPrompt(),      // Or  "<cleartext password>"
+  customData: { <any information> },
+  roles: [
+    { role: "<role>", db: "<database>" } | "<role>",
+    ...
+  ],
+  authenticationRestrictions: [
+     {
+       clientSource: ["<IP>" | "<CIDR range>", ...],
+       serverAddress: ["<IP>" | "<CIDR range>", ...]
+     },
+     ...
+  ],
+  mechanisms: [ "<SCRAM-SHA-1|SCRAM-SHA-256>", ... ],
+  passwordDigestor: "<server|client>"
+}
+
+Ex :
+----
+>db.createUser(
+   {
+     user: "accountUser",
+     pwd: passwordPrompt(),  // Or  "<cleartext password>"
+     roles: [ "readWrite", "dbAdmin" ]
+   }
+)
+
+ii)Change Pwd
+-----------------------
+>db.changeUserPassword(username, password)
+>db.changeUserPassword("accountUser", "SOh3TbYhx8ypJPxmt1oOfL")
+
+iii)Login User :
+---------------------
+>db.auth(<username>, <password>)
+>db.auth( "myTestDBUser", "MyPwd" )
+
+iv)Get User Info
+----------------------
+db.getUser(username, args)
+>db.getUser("appClient")
+
+v)Update User:
+--------------------
+>db.updateUser( username, update, writeConcern )
+
+vi)Drop User
+------------------
+>db.dropUser(username, writeConcern)
+>db.dropUser("reportUser1")
+
+
+++++++++++
+Collection
+++++++++++
+syntax:
+---------
+>db.createCollection(name, options)
+
+Here 
+->name     <String>   : collection Name
+->options  <document> : Options to create 
+                        i)Normal/non-capped Collection
+                       ii)Capped collection
+                      iii)Clustered collection
+                       iv) View
+
+
+Full Syntax :
+------------
+db.createCollection( <name>,
+    {
+      capped: <boolean>,
+      timeseries: {                  // Added in MongoDB 5.0
+         timeField: <string>,        // required for time series collections
+         metaField: <string>,
+         granularity: <string>,
+         bucketMaxSpanSeconds: <number>,  // Added in MongoDB 6.3
+         bucketRoundingSeconds: <number>  // Added in MongoDB 6.3
+      },
+      expireAfterSeconds: <number>,
+      clusteredIndex: <document>,  // Added in MongoDB 5.3
+      changeStreamPreAndPostImages: <document>,  // Added in MongoDB 6.0
+      size: <number>,
+      max: <number>,
+      storageEngine: <document>,
+      validator: <document>,
+      validationLevel: <string>,
+      validationAction: <string>,
+      indexOptionDefaults: <document>,
+      viewOn: <string>,
+      pipeline: <pipeline>,
+      collation: <document>,
+      writeConcern: <document>
+    }
+  )
+
+Ex : (Non-Capped Collection)
+---
+db.createCollection("employees");
+
+
+Ex : (Capped Collection)
+---
+db.createCollection("log", { capped : true, size : 5242880, max : 5000 } )
+					   
+Note : if capped is true then need to either size or max field mandatory
+
+Ex:  (Clustered Collection)
+---
+db.createCollection(
+   "stocks",
+   { clusteredIndex: { "key": { _id: 1 }, "unique": true, "name": "stocks clustered key" } }
+)
+
+
+
+To drop collection:
+-----------------
+>db.collection.drop()
+
+
+
+++++++++++++++++|
+CRUD Operations:|
+++++++++++++++++|
+----------
+C : INSERT 
+----------
+>db.collection.insertOne()     :  Inserts a single document into a collection
+>db.collection.insertMany()    :  Inserts multiple documents into a collection
+
+Ex's :
+---
+>db.products.insertOne( { item: "card", qty: 15 } );
+>db.products.insertMany( [
+      { item: "card", qty: 15 },
+      { item: "envelope", qty: 20 },
+      { item: "stamps" , qty: 30 }
+   ] );
+
+---------
+U : UPDATE 
+----------
+i)db.collection.updateOne()
+
+Syntax :
+-------
+      db.collection.updateOne(filter, update, options)
+	  
+>db.collection.updateOne(
+   <filter>,        // Where condition
+   <update>,        // update fields and its respective value
+   {
+     upsert: <boolean>,
+     writeConcern: <document>,
+     collation: <document>,
+     arrayFilters: [ <filterdocument1>, ... ],
+     hint:  <document|string>        // Available starting in MongoDB 4.2.1
+   }
+)
+>db.collection.updateOne()      : Updates at most a single document that match a specified filter even though multiple documents may match the specified filter.
+
+filter <document >              : selection criteria / Restriction / Where condition
+                                  Specify an empty document { } to update the first document returned in the collection.
+						
+update <document>               : The modifications to apply
+
+
+Ex :
+---
+>db.collection.updateOne(
+   <query>,
+   { $set: { status: "D" }, $inc: { quantity: 2 } },
+   ...
+ )
+ 
+>db.collection.updateOne(
+   <query>,
+   [
+      { $set: { status: "Modified", comments: [ "$misc1", "$misc2" ] } },
+      { $unset: [ "misc1", "misc2" ] }
+   ]
+   ...
+)
+
+ii)db.collection.updateMany()
+Syntax :
+--------
+    db.collection.updateMany(filter, update, options)
+
+>db.collection.updateMany(
+   <filter>,
+   <update>,
+   {
+     upsert: <boolean>,
+     writeConcern: <document>,
+     collation: <document>,
+     arrayFilters: [ <filterdocument1>, ... ],
+     hint:  <document|string>        // Available starting in MongoDB 4.2.1
+   }
+ )
+ 
+>db.collection.updateMany()           :Update all documents that match a specified filter. 
+
+filter <document >              : selection criteria / Restriction / Where condition
+                                  Specify an empty document { } to update the all document returned in the collection.
+						
+update <document>               : The modifications to apply
+
+Ex :
+---
+>db.collection.updateMany(
+   <query>,
+   { $set: { status: "D" }, $inc: { quantity: 2 } },
+   ...
+ )
+ 
+>db.collection.updateMany(
+   <query>,
+   [
+      { $set: { status: "Modified", comments: [ "$misc1", "$misc2" ] } },
+      { $unset: [ "misc1", "misc2" ] }
+   ]
+   ...
+) 
+
+-----------
+D - DELETE
+-----------
+>db.collection.deleteOne()
+
+Syntax :
+------
+>db.collection.deleteOne(
+    <filter>,
+    {
+      writeConcern: <document>,
+      collation: <document>,
+      hint: <document|string>
+    }
+ )
+ 
+ 
+filter  <document>   : Specifies deletion criteria using query operators.
+                       Specify an empty document { } to delete the first document returned in the collection.
+					   
+					   
+Ex :
+----
+>db.orders.deleteOne({ _id: ObjectId("563237a41a4d68582c2509da")});		
+
+>db.collection.deleteMany()
+
+Syntax :
+-------
+db.collection.deleteMany(
+   <filter>,
+   {
+      writeConcern: <document>,
+      collation: <document>
+   }
+)			   
+
+filter  <document>  :  Specifies deletion criteria using query operators.
+                       To delete all documents in a collection, pass in an empty document ({ }).
+					   
+					   
+Ex :
+----
+>db.orders.deleteMany( { "stock" : "Brent Crude Futures", "limit" : { $gt : 48.88 } } );					   
+
+
+
+
+
+                              ++++++++++++++++++++++
+                              Field Update Operators:
+                              +++++++++++++++++++++++
+
+$currentDate           : Sets the value of a field to current date, either as a Date or a Timestamp. (Default is date)
+
+$inc                   : Increments the value of the field by the specified amount. 
+
+$min                   : Only updates the field if the specified value is less than the existing field value.
+
+$max                   : Only updates the field if the specified value is greater than the existing field value.
+
+
+$mul                   : Multiplies the value of the field by the specified amount.
+
+
+$rename                : Renames a field.
+
+$set                   : Sets/updates the value of a field in a document.
+
+$unset                 : Removes the specified field from a document.
+
+
+-------------
+$currentDate :
+-------------
+Syntax :
+-------
+{ $currentDate: { <field1>: <typeSpecification1>, ... } }
+
+Here 
+<typeSpecification> can be either:
+    ->a boolean true to set the field value to the current date as a Date, or
+    ->a document { $type: "timestamp" } or { $type: "date" } which explicitly specifies the type. 
+	  The operator is case-sensitive and accepts only the lowercase "timestamp" or the lowercase "date".
+
+
+
+Ex :
+---
+>db.customers.insertOne(
+   { _id: 1, status: "a", lastModified: ISODate("2013-10-02T01:11:18.965Z") }
+   )
+
+>db.customers.updateOne(
+   { _id: 1 },
+   {
+     $currentDate: {
+        lastModified: true,
+        "cancellation.date": { $type: "timestamp" }
+     },
+     $set: {
+        "cancellation.reason": "user request",
+        status: "D"
+     }
+   }
+)
+
+Result :
+{
+   "_id" : 1,
+   "status" : "D",
+   "lastModified" : ISODate("2020-01-22T21:21:41.052Z"),
+   "cancellation" : {
+      "date" : Timestamp(1579728101, 1),
+      "reason" : "user request"
+   }
+}
+
+
+------
+$inc :
+-----
+Syntax :
+--------
+ { $inc: { <field1>: <amount1>, <field2>: <amount2>, ... } }
+ 
+Ex :
+---
+>db.products.insertOne(
+   {
+     _id: 1,
+     sku: "abc123",
+     quantity: 10,
+     metrics: { orders: 2, ratings: 3.5 }
+   }
+ ) 
+
+>db.products.updateOne(
+   { sku: "abc123" },
+   { $inc: { quantity: -2, "metrics.orders": 1 } }
+  )
+
+Result is:
+{
+  _id: 1,
+  sku: 'abc123',
+  quantity: 8,
+  metrics: { orders: 3, ratings: 3.5 }
+}
+
+
+-----
+$min :
+-----
+Syntax :
+-------
+   { $min: { <field1>: <value1>, ... } }
+   
+   
+Ex :
+--
+>db.scores.insertOne( { _id: 1, highScore: 800, lowScore: 200 } )  
+>db.scores.updateOne( { _id: 1 }, { $min: { lowScore: 150 } } )
+
+Result is :
+{ _id: 1, highScore: 800, lowScore: 150 }
+
+>db.scores.updateOne( { _id: 1 }, { $min: { lowScore: 250 } } )
+
+Result is :
+{ _id: 1, highScore: 800, lowScore: 150 }
+
+
+-----
+$max
+-----
+Syntax :
+-------
+   { $max: { <field1>: <value1>, ... } }
+
+Ex :
+----
+>db.scores.insertOne( { _id: 1, highScore: 800, lowScore: 200 } )
+>db.scores.updateOne( { _id: 1 }, { $max: { highScore: 950 } } )
+
+Result is :
+{ _id: 1, highScore: 950, lowScore: 200 }
+
+>db.scores.updateOne( { _id: 1 }, { $max: { highScore: 870 } } )
+
+Result is    
+{ _id: 1, highScore: 950, lowScore: 200 }
+
+
+----
+$mul 
+----
+Syntax :
+-------
+  { $mul: { <field1>: <number1>, ... } }
+  
+  
+Ex:
+---
+>db.products.insertOne(
+   { "_id" : 1, "item" : "Hats", "price" : Decimal128("10.99"), "quantity" : 25 }
+ )  
+ 
+>db.products.updateOne(
+   { _id: 1 },
+   { $mul:
+      {
+         price: Decimal128( "1.25" ),
+         quantity: 2
+       }
+   }
+  ) 
+  
+Result is :
+{ _id: 1, item: 'Hats', price: Decimal128("13.7375"), quantity: 50 }
+
+Apply $mul Operator to a Non-existing Field
+--------------------------------------------
+>db.products.insertOne( { _id: 2,  item: "Unknown" } )
+>db.products.updateOne(
+   { _id: 2 },
+   { $mul: { price: Decimal128("100") } }
+ ) 
+ 
+Result is  :
+{ "_id" : 2, "item" : "Unknown", "price" : NumberLong(0) } 
+
+
+
+-------
+$rename
+-------
+Syntax :
+-------
+  { $rename: { <field1>: <newName1>, <field2>: <newName2>, ... } }
+  
+  
+Ex :
+---
+>db.students.updateOne(
+   { _id: 1 }, { $rename: { 'nickname': 'alias', 'cell': 'mobile' } }
+ )  
+
+Result is :
+{ _id: 1  "alias":"One Alias", "mobile":91939191 }  
+
+>db.students.updateMany(
+   { "nmae": { $ne: null } },
+   { $rename: { "nmae": "name" } }
+ )
+
+Result is : 
+{
+  "_id": 1,
+  "alias": [ "The American Cincinnatus", "The American Fabius" ],
+  "mobile": "555-555-5555",
+  "name": { "first" : "george", "last" : "washington" }
+}
+
+{
+   "_id" : 2,
+   "alias" : [ "My dearest friend" ],
+   "mobile" : "222-222-2222",
+   "name" : { "first" : "abigail", "last" : "adams" }
+}
+
+{
+   "_id" : 3,
+  "alias" : [ "Amazing grace" ],
+  "mobile" : "111-111-1111",
+  "name" : { "first" : "grace", "last" : "hopper" }
+} 
+
+
+-----
+$set 
+-----
+Syntax :
+-------
+    { $set: { <field1>: <value1>, ... } }
+	
+	
+Ex :
+----
+>db.products.insertOne(
+   {
+     _id: 100,
+     quantity: 250,
+     instock: true,
+     reorder: false,
+     details: { model: "14QQ", make: "Clothes Corp" },
+     tags: [ "apparel", "clothing" ],
+     ratings: [ { by: "Customer007", rating: 4 } ]
+   }
+)
+
+>db.products.updateOne(
+   { _id: 100 },
+   { $set:
+      {
+        quantity: 500,
+        details: { model: "2600", make: "Fashionaires" },
+        tags: [ "coats", "outerwear", "clothing" ]
+      }
+   }
+)	
+
+Result is :
+{
+  _id: 100,
+  quantity: 500,
+  instock: true,
+  reorder: false,
+  details: { model: '2600', make: 'Fashionaires' },
+  tags: [ 'coats', 'outerwear', 'clothing' ],
+  ratings: [ { by: 'Customer007', rating: 4 } ]
+}
+
+------
+$unset
+------
+Syntax :
+-------
+    { $unset: { <field1>: "", ... } }
+
+
+Ex :
+---
+>db.products.insertMany( [
+   { "item": "chisel", "sku": "C001", "quantity": 4, "instock": true },
+   { "item": "hammer", "sku": "unknown", "quantity": 3, "instock": true },
+   { "item": "nails", "sku": "unknown", "quantity": 100, "instock": true }
+  ] )	
+	
+>db.products.updateOne(
+   { sku: "unknown" },
+   { $unset: { quantity: "", instock: "" } }
+  )	
+	
+Result is :
+{
+  item: 'chisel',
+  sku: 'C001',
+  quantity: 4,
+  instock: true
+},
+{
+  item: 'hammer',
+  sku: 'unknown'
+},
+{
+  item: 'nails',
+  sku: 'unknown',
+  quantity: 100,
+  instock: true
+}	
+
+
+---------------------------------------------------READ---------------------------------------------
+--------
+R - READ:
+---------
+>db.collection.find() | db.collection.findOne()
+
+Syntax :
+-------
+ db.collection.find(query, projection, options)
+
+query        <document>     : selection criteria / Restriction / Where condition .[Specifies selection filter using query operators.]
+                              To return all documents in a collection, omit this parameter or pass an empty document ({}).
+	
+	
+	
+projection 	<document>      : Specifies the fields to return in the documents that match the query filter. To return all fields in the matching documents, omit this parameter.
+
+
+	
+-------------------------------	
+Query and Projection Operators
+-------------------------------	
+
+i)Query Selectors  <Where>:
+--------------------------
+Comparasion Query Operators 
+---------------------------
+Name                                   Description
+
+$eq                                    Matches values that are equal to a specified value.
+
+$ne                                    Matches all values that are not equal to a specified value
+
+$gt                                    Matches values that are greater than a specified value.
+
+$gte                                   Matches values that are greater than or equal to a specified value.
+
+$lt                                    Matches values that are less than a specified value.
+
+$lte                                   Matches values that are less than or equal to a specified value.
+
+$in                                    Matches any of the values specified in an array.
+
+$ne                                    Matches all values that are not equal to a specified value.
+
+
+
+Syntax's :
+-------
+ { <field>: { $eq: <value> } }
+ { field:   { $ne: value   } }
+ { field:   { $gt: value   } }
+ { field:   { $gte: value  } }
+ { field:   { $lt: value   } }
+ { field:   { $lte: value  } }
+ { field:   { $in: [<value1>, <value2>, ... <valueN> ] } }
+ { field:   { $nin: [ <value1>, <value2> ... <valueN> ] } }
+ 
+
+>db.inventory.insertMany( [
+   { _id: 1, item: { name: "ab", code: "123" }, qty: 15, tags: [ "A", "B", "C" ] },
+   { _id: 2, item: { name: "cd", code: "123" }, qty: 20, tags: [ "B" ] },
+   { _id: 3, item: { name: "ij", code: "456" }, qty: 25, tags: [ "A", "B" ] },
+   { _id: 4, item: { name: "xy", code: "456" }, qty: 30, tags: [ "B", "A" ] },
+   { _id: 5, item: { name: "mn", code: "000" }, qty: 20, tags: [ [ "A", "B" ], "C" ] }
+] )
+
+>db.inventory.find( { qty: { $eq: 20 } } ) 
+
+Logical Query Operators:
+-----------------------
+$and                           Joins query clauses with a logical AND returns all documents that match the conditions of both clauses.
+
+$not                           Inverts the effect of a query expression and returns documents that do not match the query expression.
+
+$nor                           Joins query clauses with a logical NOR returns all documents that fail to match both clauses.
+
+$or                            Joins query clauses with a logical OR returns all documents that match the conditions of either clause.
+
+
+
+$and 
+----
+
+{ $and: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
+
+Ex :
+----
+db.example.find( {
+   $and: [
+      { x: { $ne: 0 } },
+      { $expr: { $eq: [ { $divide: [ 1, "$x" ] }, 3 ] } }
+   ]
+} )
+
+
+$not
+----
+Syntax :
+-------
+   { field: { $not: { <operator-expression> } } }
+   
+Ex :
+---
+db.inventory.find( { price: { $not: { $gt: 1.99 } } } )   
+
+
+$nor
+----
+Syntax :
+-------
+  { $nor: [ { <expression1> }, { <expression2> }, ...  { <expressionN> } ] }
+
+Ex :
+---
+>db.inventory.find( { $nor: [ { price: 1.99 }, { qty: { $lt: 20 } }, { sale: true } ] } )
+
+
+$or
+----
+Syntax :
+-------
+{ $or: [ { <expression1> }, { <expression2> }, ... , { <expressionN> } ] }
+
+>db.inventory.find( { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] } )
+
+
+Element Query Operators
+-----------------------
+Name                                Description
+
+$exists                             Matches documents that have the specified field.
+$type                               Selects documents if a field is of the specified type.
+
+
+Synyax :
+-------
+ { field: { $exists: <boolean> } }
+ 
+Ex :
+---
+db.spices.find( { saffron: { $exists: true } } ) 
+
+Syntax :
+-------
+  { field: { $type: <BSON type> } }
+  { field: { $type: [ <BSON type1> , <BSON type2>, ... ] } }
+
+Ex 1:
+---
+>db.data.insertMany( [
+   { _id : 1, x : { "$minKey" : 1 } },
+   { _id : 2, y : { "$maxKey" : 1 } }
+  ] )
+  
+>db.data.find( { x: { $type: "minKey" } } )      : Return _id: 1 document
+>db.data.find( { y: { $type: "maxKey" } } )      : Return _id: 2 document
+
+Ex2:
+---
+>db.addressBook.insertMany( [
+      { _id : 1, address : "2030 Martian Way", zipCode : "90698345" },
+      { _id : 2, address : "156 Lunar Place", zipCode : 43339374 },
+      { _id : 3, address : "2324 Pluto Place", zipCode : NumberLong(3921412) },
+      { _id : 4, address : "55 Saturn Ring" , zipCode : NumberInt(88602117) },
+      { _id : 5, address : "104 Venus Drive", zipCode : ["834847278", "1893289032"] }
+] )
+
+>db.addressBook.find( { zipCode : { $type : 2 } } );   (OR)
+ db.addressBook.find( { zipCode : { $type : "string" } } );
+ 
+Result is :
+{ _id : 1, address : "2030 Martian Way", zipCode : "90698345" }
+{ _id : 5, address : "104 Venus Drive", zipCode : [ "834847278", "1893289032" ] }
+
+BSON type's:
+------------
+
+Type	         Number	   Alias    	  Notes
+Double	        	1	  "double"	
+String  	       	2	  "string"	
+Object		        3	  "object"	
+Array		        4	  "array"	
+Binary data      	5	  "binData"	
+Undefined	        6	  "undefined"	 Deprecated.
+ObjectId	        7	  "objectId"	
+Boolean	            8	   "bool"	
+Date	            9	   "date"	
+Null	           10	   "null"	
+Regular Expression 11	   "regex"	
+DBPointer	       12	   "dbPointer"	  Deprecated.
+JavaScript	       13	   "javascript"	
+Symbol	           14	   "symbol"	      Deprecated.
+32-bit integer	   16	    "int"	
+Timestamp	       17	   "timestamp"	
+64-bit integer	   18	   "long"	
+Decimal128	       19	  "decimal"	
+Min key        	  -1	  "minKey"	
+Max key	         127	  "maxKey"
+
+
+Array Query Operators:
+---------------------
+$all                     Matches arrays that contain all elements specified in the query.
+$elemMatch               Selects documents if element in the array field matches all the specified $elemMatch conditions.
+$size                    Selects documents if the array field is a specified size.
+
+Syntax :
+-------
+{ <field>: { $all: [ <value1> , <value2> ... ] } }            <is equivalent to >    { $and: [ <value1> , <value2> ...  ] }
+
+Ex :
+---
+{
+   _id: ObjectId("5234cc89687ea597eabee675"),
+   code: "xyz",
+   tags: [ "school", "book", "bag", "headphone", "appliance" ],
+   qty: [
+          { size: "S", num: 10, color: "blue" },
+          { size: "M", num: 45, color: "blue" },
+          { size: "L", num: 100, color: "green" }
+        ]
+}
+
+{
+   _id: ObjectId("5234cc8a687ea597eabee676"),
+   code: "abc",
+   tags: [ "appliance", "school", "book" ],
+   qty: [
+          { size: "6", num: 100, color: "green" },
+          { size: "6", num: 50, color: "blue" },
+          { size: "8", num: 100, color: "brown" }
+        ]
+}
+
+{
+   _id: ObjectId("5234ccb7687ea597eabee677"),
+   code: "efg",
+   tags: [ "school", "book" ],
+   qty: [
+          { size: "S", num: 10, color: "blue" },
+          { size: "M", num: 100, color: "blue" },
+          { size: "L", num: 100, color: "green" }
+        ]
+}
+
+{
+   _id: ObjectId("52350353b2eff1353b349de9"),
+   code: "ijk",
+   tags: [ "electronics", "school" ],
+   qty: [
+          { size: "M", num: 100, color: "green" }
+        ]
+}
+
+>db.inventory.find( { tags: { $all: [ "appliance", "school", "book" ] } } )
+
+Result is :
+{
+   _id: ObjectId("5234cc89687ea597eabee675"),
+   code: "xyz",
+   tags: [ "school", "book", "bag", "headphone", "appliance" ],
+   qty: [
+          { size: "S", num: 10, color: "blue" },
+          { size: "M", num: 45, color: "blue" },
+          { size: "L", num: 100, color: "green" }
+        ]
+}
+
+{
+   _id: ObjectId("5234cc8a687ea597eabee676"),
+   code: "abc",
+   tags: [ "appliance", "school", "book" ],
+   qty: [
+          { size: "6", num: 100, color: "green" },
+          { size: "6", num: 50, color: "blue" },
+          { size: "8", num: 100, color: "brown" }
+        ]
+}
+
+$elemMatch
+------
+Syntax :
+------
+{ <field>: { $elemMatch: { <query1>, <query2>, ... } } }
+
+ex :
+---
+>db.survey.insertMany( [
+   { "_id": 1, "results": [ { "product": "abc", "score": 10 },
+                            { "product": "xyz", "score": 5 } ] },
+   { "_id": 2, "results": [ { "product": "abc", "score": 8 },
+                            { "product": "xyz", "score": 7 } ] },
+   { "_id": 3, "results": [ { "product": "abc", "score": 7 },
+                            { "product": "xyz", "score": 8 } ] },
+   { "_id": 4, "results": [ { "product": "abc", "score": 7 },
+                            { "product": "def", "score": 8 } ] },
+   { "_id": 5, "results": { "product": "xyz", "score": 7 } }
+ ] )
+ 
+>db.survey.find(
+   { results: { $elemMatch: { product: "xyz" } } }
+)
+
+Result is :
+[
+   {
+      _id: 1,
+      results: [ { product: 'abc', score: 10 }, { product: 'xyz', score: 5 } ]
+   },
+   {
+      _id: 2,
+      results: [ { product: 'abc', score: 8 }, { product: 'xyz', score: 7 } ]
+   },
+   {
+      _id: 3,
+      results: [ { product: 'abc', score: 7 }, { product: 'xyz', score: 8 } ]
+   }
+]
+
+
+$size
+------
+>db.collection.find( { field: { $size: 2 } } ); 

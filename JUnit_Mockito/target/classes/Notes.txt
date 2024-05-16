@@ -1,0 +1,19 @@
+ JUnit Basic Annotations :
+    @Test
+	@Disabled
+	@DisplayName
+	@BeforeEach
+	@AfterEach
+	@BeforeAll
+	@AfterAll
+	@Tag
+	@TestMethodOrder
+	@Order
+	@ParameterizedTest
+	@RepeatedTest
+    @ParameterizedTest
+      @NullSource
+      @EmptySource
+      @NullAndEmptySource
+      @EnumSource
+      @CsvSource

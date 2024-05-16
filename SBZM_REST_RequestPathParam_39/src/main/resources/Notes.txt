@@ -1,0 +1,213 @@
+		
+		
+		                        @PathVariable
+   -----------------------------------------------------------------------------------------------		
+Query (or) Request Parameter:-
+URL?key=val&key=val&key=val
+
+/searchEmp?ename=AJAY
+/delelteStd?sid=4567
+
+@RequestParam(name="",required=false, defaultValue="")DataType localVariable
+
+PathVariable (or) Path Parameter:- 
+ Path variable is used to send primitive type data using URL section without any key
+ (direct value). It is called as clean URL concept, that takes less memory and
+ faster in execution also follows order in data sending.
+
+*) This concept is given by new UI technologies and added to REST API F/ws.
+
+
+Types of Path(2):-
+a) static path  : It indicates actual path of method. ex: /show, /delete ..etc
+b) dynamic path : Sending data using path is called as dynamic path.
+    Syntax to declare dynamic path : /{key}  in application.
+    Syntax to read dynamic path in application
+            @PathVariable  DataType  keyName.
+
+
+Ex: /delete/{id}  ==> /delete is static path. /{id} is dynamic path, in this place
+                       a value comes at runtime.
+
+*) One URL decleration can have any no.of static and dynamic paths.
+*) In spring boot use @PathVariable Annotation to read value.
+
+-Examples cases------
+/delete/{id}
+/searchEmp/{name}
+/mailIdExist/{email}
+/editProduct/{prodId}
+
+*)Other then FORMs data, we want to perform one operation and send some text type data
+ (primitive type data, like : id, code, email..etc)
+
+
+-----code--------------------
+Name : SpringBoot2RestPathParamEx
+Dep  : Spring web
+
+
+--RestController---
+package in.nareshit.raghu.rest;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ProductRestController {
+
+	@GetMapping("/find/{id}")
+	public String showDataB(@PathVariable Integer id) 
+	{
+		System.out.println(id);
+		return "Data is :" + id;
+	}
+	
+	@GetMapping("/update/{code}/{model}")
+	public String updateInfo(
+			@PathVariable String code,
+			@PathVariable String model
+			) 
+	{
+		return "DONE : code : " + code +", Model:" +model;
+	}
+	
+	
+}
+--------------------------------------------------------
+
+
+
+-----------Request URLs-------------------------------
+http://localhost:8080/find/102
+http://localhost:8080/find/ABC     (Bad Request,400)
+http://localhost:8080/find         (Not Found,404)
+http://localhost:8080/find/102/PEN (Not Found,404)
+
+------------------------------------------------------
+
+http://localhost:8080/update/ABC/XYZ
+http://localhost:8080/update/XYZ/ABC
+http://localhost:8080/update/XYZ         (Not Found,404)
+http://localhost:8080/update/XYZ/AB/AB   (Not Found,404)
+
+
+------------code----------
+package in.nareshit.raghu.rest;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ProductRestController {
+	
+	//.../remove/Code
+	
+	@GetMapping("/remove/code")
+	public String removeA() {
+		return "STATIC PATH ";
+	}
+	
+	@GetMapping("/remove/{code}")
+	public String removeB(@PathVariable String code) {
+		return "DYNAMIC PATH  code :"+code;
+	}
+	
+}
+
+*) If two controller methods URLs look similer using static, dynamic concept
+ first compare request URL with static Paths, if not matched then goto dynamic
+ paths concept.
+
+*) URL (including paths) is case-sensitive.
+
+http://localhost:8080/remove/abc     : DYNAMIC PATH  code :abc
+http://localhost:8080/remove/code   :STATIC PATH 
+http://localhost:8080/remove/{code} : DYNAMIC PATH  code :{code}
+http://localhost:8080/remove/Code   : DYNAMIC PATH  code :Code
+
+===================================================================
+Example:
+m1()  --  /find/one/test
+m2()  --  /find/one/{test}
+m3()  --  /find/{one}/{test}
+m4()  --  /{find}/{one}/{test}
+
+*) If multple Methods are matching, more static count is first priority.
+Request URLs:-
+
+#3 /find/one/test
+SELECTED:- m1(), m2() m3(), m4()
+EXECUTED:- m1()
+
+#2  /find/25/test
+SELECTED:- m3(), m4()
+EXECUTED:- m3()
+
+#1 /find/25/AA
+
+SELECTED: m3(), m4()
+EXECUTED: m3()
+
+
+----------code#3------------------------
+package in.nareshit.raghu.rest;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ProductRestController {
+	
+	//.../remove/MNO
+	
+	@GetMapping("/remove/{id}")
+	public String removeDataA(@PathVariable String id) 
+	{
+		return "FROM A => " +id;
+	}
+	
+	@GetMapping("/remove/{code}")
+	public String removeDataB(@PathVariable String code) 
+	{
+		return "FROM B -> " + code;
+	}
+}
+
+RequestURL:
+  http://localhost:8080/remove/MNO
+Result: Internal Server Error, status=500.
+IllegalStateException: Ambiguous handler methods mapped for '/remove/MNO': 
+{public java.lang.String in.nareshit.raghu.rest.ProductRestController.removeDataB(java.lang.String), 
+public java.lang.String in.nareshit.raghu.rest.ProductRestController.removeDataA(java.lang.String)}
+
+
+--BestSolution : RestController-------
+package in.nareshit.raghu.rest;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ProductRestController {
+	
+	//.../remove/MNO
+	
+	//@GetMapping("/removeById/{id}")
+	@GetMapping("/remove/id/{id}")
+	public String removeDataA(@PathVariable Integer id) 
+	{
+		return "FROM A => " +id;
+	}
+	
+	//@GetMapping("/removeByCode/{code}")
+	@GetMapping("/remove/code/{code}")
+	public String removeDataB(@PathVariable String code) 
+	{
+		return "FROM B -> " + code;
+	}
+}

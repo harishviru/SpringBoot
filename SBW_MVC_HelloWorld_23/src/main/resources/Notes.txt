@@ -1,0 +1,109 @@
+			   Spring Boot - Spring WEB MVC
+			   ----------------------------
+
+*) Work flow:-
+#1. Goto Browser and Enter URL in addressbar
+#2. If we enter URL (Submit HTML Form/Click on HyperLink) that makes request(URL)
+#3. Every Request is given to FrontController(FC).
+    Here, FC is a 	Pre-defined servlet named as DispatcherServlet given by Spring.
+    This we need to configure (web.xml for Xml Configuration/ AppInit For Java/Annotation
+    Configuration. This is not required to configure in Spring Boot[AutoConfiguration]).
+
+#4. When ever any request is received at FC, then those details are given to HandlerMapping
+    (which behaves like a Register of Controller classes).
+    It takes URL/Request data and provide controller class and method name to be executed
+
+    -------------------Handler Mapping -------------------------------------
+           Path + Type                        class + Method
+	 /emp/show  + GET                   EmployeeController#showData()
+
+	 /user/logout + GET                 UserController#logoutUser()
+
+         /student/add + POST                StudentController#createStudent()
+    ------------------------------------------------------------------------
+
+*** Note: Handler Mapping (it is Map) created based on your code (controller classes)
+    at runtime while starting application. (taken care by Spring F/w)[It is pre-defined]
+
+*** Code(Controller class# methods) is written by Programmer (one time)
+    Object (Controller class object) is created by Spring Container (one time)
+    Method call (controllerClassObject.methodName()) is done by FC when ever request
+    is received by Browser.
+
+#5. Now, FC will execute/call controller method (details are given by HandlerMapping,
+    object is given by Spring container).
+    ie For every request one time method is called. 
+
+    Controller class will process the request.
+
+#6. Controllre class, after processing request, provides data as Model(Memory that holds
+    data in Key=Val Format), model is optional.
+
+      It returns ViewNam (A UI Page Name without any folder location and file extension)
+   Ex: HomePage  ( No location,  No extension)
+
+
+#7. FC Reads ViewName from Controller class, it has to findout on UI page now.
+
+#8. FC calls ViewResolver, that adds prefix(file location) and suffix(file extension).
+    and provides FileName(UI Page Name) finally.
+
+  Ex: prefix = /pages/
+      suffix = .jsp
+
+   PageName = prefix + ViewName + suffix
+            = /pages/HomePage.jsp
+ 
+Q) Why ViewResolver is added in Spring WEB MVC?
+A) if there is no view resolver, then file location and extension details must be
+    given inside controller class(method). If UItechnology is modified/upgraded to
+    any other like HTML to JSP then code changes are required in Controller.
+    TO avoid such modifications in controller, ViewResolver is added.
+
+   *** ViewResolver makes Controller class independent of UI Technologies.
+
+#9. FC gets UI page Name from ViewResolver and same page gets executed/called.
+    
+#10. UI Page may read data (if exist) from Model using EL(Expression Language)
+     [ and JSTL-JSP Standard Tag Library for JSP ], such process is called as
+     Data Rendering.
+
+#11. Final UI Page is returned back to FC.
+
+#12. FC will send same as Response back to browser.
+#13. Browser will display data/UI page.
+
+*)Note:
+> In Spring Boot, need not configure FC(web.xml/AppInit), handler mapping and 
+   ViewResolver, they are autoconfigured.
+
+> For View Resolver, we should provide keys in properties file for prefix and suffix.
+> Programmer should write code for Controller Class, ViewPage and Model.
+> Model(Data) is optional.
+
+> HttpMethods : Here we use Two types GET, POST (these are only two which supported by browser)
+  GET   : Fetch Resource from Server
+  POST  : Create new Resource at Server (or send data to Server)
+  PUT   : Modify existed Resource at server (Full modification/High level modification)
+  DELETE: Remove existed Resource at server
+  PACTH : Partially Modify Existed Resource at server
+
+> We can compare HTTP method with Database Operations
+
+  Http Method               Database operation
+    GET                         SELECT 
+    POST                        INSERT
+    PUT/PATCH                   UPDATE
+    DELETE                      DELETE
+
+
+> *** By using web browser we can make request in 3 ways
+  a) Enter URL in Addressbar   (GET Type)
+  b) HTML Form Submit          (*GET/POST Type)
+  c) On Click HyperLink        (GET Type)
+
+============================================================================
+*) Spring Boot provides 3 embedded servers
+  a) Apache Tomcat (Default)
+  b) JBoss Undertow.
+  c) Eclipse Jetty.

@@ -1,0 +1,29 @@
+
+ JUnit Annotations :
+ -----------------------------
+       @Test
+	@Disabled
+	@DisplayName
+	@BeforeEach
+	@AfterEach
+	@BeforeAll
+	@AfterAll
+	@Tag
+	@TestMethodOrder
+	@Order
+	@ParameterizedTest
+	@RepeatedTest
+    @ParameterizedTest
+      @NullSource
+     @EmptySource
+    @NullAndEmptySource
+   @EnumSource
+   @CsvSource
+
+Mockitio Annotations :
+------------------------------------
+   @ExtendWith(MockitoExtension.class)
+   @Mock
+   @Spy
+   @Captor
+  @InjectMocks

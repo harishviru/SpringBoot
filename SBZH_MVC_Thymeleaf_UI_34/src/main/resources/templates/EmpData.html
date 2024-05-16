@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="ISO-8859-1">
+<link rel="stylesheet" th:href="@{/css/myemp.css}">
+<script type="text/javascript"  th:src="@{/js/myemp.js}"></script>
+<title>EmpData</title>
+</head>
+<body>
+       <h2>Welcome to thymeleaf (Tags and Symbols)</h2>
+       
+       <h3 >1(a). Variable Expression > ${key}  (Primitive Type)</h3>
+       Id  : <span th:text="${id}"></span> ,
+      Name :  <span th:text="${name}"></span>,
+      Rating  <span th:text="${rating}"></span>,
+      LoggedIn:  <span th:text="${loggedIn}"></span>,
+      Role : <span th:text="${role}"></span>
+      
+      
+    <h3 >1(b). Variable Expression > ${key}  (Object Type)</h3>
+      EmpId  : <span th:text="${empObj.empId}"></span> ,
+      EmpName :  <span th:text="${empObj.empName}"></span>,
+      EmpSal  <span th:text="${empObj.empSal}"></span>,
+      EmpDept:  <span th:text="${empObj.empDept}"></span>,
+      
+      
+       <h3 >2. Conditional Expression (If) > th:if with th:unless</h3>
+           <div th:if="${loggedIn}">
+             Manager Content
+           </div>
+           <div th:unless="${loggedIn}">
+             Please Log In. 
+           </div>
+           
+           <div th:if="${loggedIn}" th:text="'Manager Content ...!' + ${loggedIn}" ></div>
+           <div th:unless="${loggedIn}">Please Log In.  ...!"</div>
+    
+
+     <h3 >3. Switch Expression: > th:switch with th:case</h3>
+         <div th:switch="${empObj.empDept}">
+              <p th:case="'MGR'">MGR</p>
+              <p th:case="'QA'">QA</p>
+              <p th:case="'DEV'">DEV</p> 
+              <!-- Default case -->
+              <p th:case="*">Employee has no role</p>
+        </div>
+        
+     <h3 >4. Iteration Expression > th:each="tempVar:${collectionVariable}"</h3>
+        <div th:each="emp:${empList}">
+                 EmpId   : <b><span th:text="${emp.empId}"> </span> </b>,
+                 EmpName : <b><span th:text="${emp.empName}"> </span> </b>,
+                 EmpSal  :  <b><span th:text="${emp.empSal}"></span> </b>,
+                 EmpDept :  <b><span th:text="${emp.empDept}"></span> </b>
+                 <div></div>
+        </div> 
+
+     <h3 >5. Inline  Expression> >th:inline="text"  > [[exp]] or [(exp)]</h3>
+         <span th:inline="text">[[${empObj.empDept}]]</span>
+         <span th:inline="text">[(${empObj.empDept})]</span>
+
+
+
+
+
+</body>
+</html>

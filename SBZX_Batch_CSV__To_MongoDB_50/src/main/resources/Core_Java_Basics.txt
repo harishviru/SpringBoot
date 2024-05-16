@@ -1,0 +1,269 @@
+				Date : 05/01/2021
+				Spring Boot 7AM
+				  Mr. RAGHU
+	----------------------------------------------------------
+		Spring Boot Batch Csv To MySQL Example
+
+
+#1. We can write 2 Types of Blocks in Java 
+  a) static block
+  b) instance block  (executed before every constructor)
+
+--Example---
+package in.nareshit.raghu;
+class A{
+
+	A(){
+		System.out.println("CONST");
+	}
+	
+	{
+		System.out.println("INSTANCE BLOCK ");
+	}
+}
+public class Test {
+
+	public static void main(String[] args) {
+		A a = new A();
+	}
+}
+-------------------------------------------------------
+#2   Anonymous Inner class (name less [sub]class + object)
+class/abstract class/interface
+
+          child class(no name) + object
+
+ref= new  <class/absract_class/interface>() {
+
+
+};
+
+*)Inside, Anonymous Inner class we can not write constrcutors, in place use
+   instance block.
+
+
+
+#3. Creating object to subclass(might be nameless) and reference given to
+    it super class, it called Upcasting.
+
+    A  oa = new B(); //upcasting
+
+    A  oa = new A() {   }; //Anonymous Inner class +  upcasting
+
+    A  oa = new A() {
+       
+       {
+           //instance block (behaves like constrcutor)
+       }
+    
+    };
+
+--Example--
+package in.nareshit.raghu;
+
+class A{
+	
+	A(){
+		System.out.println("#2CONST");
+	}
+	
+	{
+		System.out.println("#1INSTANCE BLOCK ");
+	}
+}
+
+
+
+public class Test {
+
+	public static void main(String[] args) {
+		A oa = new A() {
+			
+			{
+				System.out.println("#3FROM ANONYMOUS INSTANCE BLOCK");
+			}
+			
+		};
+		System.out.println(oa.getClass().getName());
+	}
+}
+---------------------------------------------------------
+Short Format:  A  oa = new A(){{ }}; //Anonymous + Instance Block
+
+*) Anonymous Innerclass works faster and better compared to normal
+  code (performance, loading/unloading, object creation..etc)
+  But it is complex in coding.
+
+==========Normal code=========
+package in.nareshit.raghu;
+
+class A{
+	
+	void m1(B ob) {
+		System.out.println("FROM M1");
+	}
+}
+interface B {
+	void m2() ;
+}
+
+class BImpl implements B{
+	public void m2() {
+		System.out.println("FROM M2");
+	}
+}
+
+public class Test {
+
+	public static void main(String[] args) {
+		A oa = new A();
+		B ob = new BImpl();
+		ob.m2();
+		oa.m1(ob);
+	}
+}
+ =================Complex Mode===============
+package in.nareshit.raghu;
+
+class A{
+
+	void m1(B ob) {
+		System.out.println("FROM M1");
+	}
+}
+interface B {
+	void m2() ;
+}
+
+class BImpl implements B{
+	public void m2() {
+		System.out.println("FROM M2");
+	}
+}
+
+public class Test {
+
+	public static void main(String[] args) {
+		new A() { //anonymous
+			{ //instance block
+
+				m1(new BImpl() { //anonymous
+					{ //instance block
+						m2();
+					}
+				});
+			}
+		};
+
+
+	}
+}
+=========================================================================
+--pre-defined--
+class FlatFileItemReader {
+  void setResource(Resource resource) { }
+  void setLineMapper(LineMapper lineMapper) { };
+}
+
+interface LineMapper {}
+class DefaultLineMapper implements LineMapper {
+  void setLineTokenizer(LineTokenizer tokenizer) { }
+  void setFieldSetMapper(FieldSetMapper fieldSetMapper) {}
+}
+
+interface LineTokenizer { }
+class DelimitedLineTokenizer implements LineTokenizer {
+   void setDelimiter(String delimiter) { }
+   void setNames(String... names) {
+}
+
+interface FieldSetMapper{}
+class BeanWrapperFieldSetMapper implements FieldSetMapper{
+  void setTargetType(Class<T> clz){}
+}
+
+
+interface Resource {
+
+}
+class ClassPathResource implements Resource {
+   ClassPathResource(String path) { }
+}
+--our code---
+FlatFileItemReader reader = new FlatFileItemReader();
+reader.setResource(new ClassPathResource("___FileName___"));
+
+reader.setLineMapper(new DefaultLineMapper(){{
+	setLineTokenizer(new DelimitedLineTokenizer(){{
+		setDelimiter(",");
+		setNames("A","B","C");
+		
+	}});
+
+	setFieldSetMapper(new BeanWrapperFieldSetMapper(){{
+	    setTargetType(Product.class);
+	}});
+}});
+
+*) If method parameter is a Interface then pass sub class object.
+
+insert into table(columns) values(:a,:b,:c);
+
+?1 ?2 ?3    -- positional parameters
+:a , :b, :c -- named parameters
+
+--------------------------------------------------------------
+		Workflow Steps
+--------------------------------------------------------------
+1. FlatFileItemReader is executed first that loads __.csv file one time
+2. Then reader , gets data Line By Line from __.csv File using
+   LineMapper(DefaultLineMapper).
+3. This LineMapper needs additional informaion ie
+   divide the line and provide the name, (LineTokenizer) 
+   based on names convert into object (FieldSetMapper).
+
+4. For LineTokenizer(DelimitedLineTokenizer) provide Delimeter as comma(,)
+   and give objectNames defined in Model class
+
+5. For FieldSetMapper(BeanWrapperFieldSetMapper) provides className to
+   create object and set data based on variable names.
+
+6. Once one line is created then that is given to Processor. 
+   It is calcuating and returning to Writer.
+
+7. JdbcBatchItemWriter will read all objects from processor and stores as a List
+   It needs 
+      DB Connection(DataSource), 
+      SQL For Insert (INSERT INTO ...SQL query), 
+      Pass Input to SQL from Object(variables) [SqlParameterSourceProvider]
+
+8. DataSource means it is Database Connection (create object inside container)
+   (Spring JDBC will not create DataSource, Spring Data JPA autoconfigure
+     DataSource).
+
+9. Define one SQL query for Insert Operation using named parameters (:variableName) 
+   Based on variable name, data is read and set to SQL by 
+   "BeanPropertyItemSqlParameterSourceProvider"
+
+   Bean           --- object
+   Property       --- variable
+   Item           -- data
+   Sql            -- Insert query
+   Parameter      -- named paramer
+   SourceProvider --- Inject data
+
+   Read Data from Object variables(ob.get__()). Inject data into INSERT query
+   based on Named Parameters.
+------------------------------------------------------------------------------
+Task:
+1) From MySQL to File(CSV)
+2) From File to MongoDB.
+
+-----------------------------------
+Inner class
+Reflection
+MultiThreading
+Collections
+Generics
+Enum and Annotation
+-----------------------------------

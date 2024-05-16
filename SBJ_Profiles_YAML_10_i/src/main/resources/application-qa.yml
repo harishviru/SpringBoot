@@ -1,0 +1,5 @@
+
+my:
+ app:
+  driver: QA-ORACLE-DRIVER
+  url: QA-ORACLE-URL

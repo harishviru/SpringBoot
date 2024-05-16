@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Profile Page</title>
+</head>
+<body>
+	<h3>Welcome to profile page</h3>
+	Hello , <span th:text="${userNameObj}"></span>
+
+   <a th:href="@{/signout}">LOGOUT</a>
+
+</body>
+</html>

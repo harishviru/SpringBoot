@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+
+<head>
+<meta charset="ISO-8859-1">
+<title>EmpData</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" >
+
+</head>
+<body>
+<div class="container">
+	<h2 align="center">Employee Information</h2>
+	<table class="table table-hover">
+		<tr>
+			<th>EmpId</th>
+			<th>EmpName</th>
+			<th>EmpEmail</th>
+			<th>EmpSal</th>
+			<th>EmpGender</th>
+			<th>EmpFavColors</th>
+			<th>EmpHr</th>
+			<th>EmpDa</th>
+			<th>EmpDept</th>
+			<th>EmpPrjs</th>
+			<th rowspan="1">LINK</th> 
+		</tr>
+
+			<tr th:each="emp:${empList}">
+				<td>[[${emp.empId}]]</td>
+				<td>[[${emp.empName}]]</td>
+				<td>[[${emp.empEmail}]]</td>
+				<td>[[${emp.empSal}]]</td>
+				<td>[[${emp.empGender}]]</td>
+				<td>[[${emp.empFavColors}]]</td>
+				<td>[[${emp.empHr}]]</td>
+				<td>[[${emp.empDa}]]</td>
+				<td>[[${emp.empDept}]]</td>
+				<td>[[${emp.empPrjs}]]</td>
+				<td><a th:href="@{edit?(empId=${emp.empId})}" class="btn btn-success">UPDATE</a> </td>
+				<td><a th:href="@{delete?(empId=${emp.empId})}" class="btn btn-danger">DELETE</a></td>
+			</tr>
+	</table>
+	</div>
+	
+	<br>
+	 Total Records : <b> [[${page.getTotalElements()}]]</b>
+	<br>
+	  <span th:if="${!page.isFirst()}">
+        <a th:href="@{/emp/all(page=0)}"><b> FIRST</b></a> &nbsp;
+     </span>  
+	
+    <span th:if="${page.hasPrevious()}">
+        <a th:href="@{/emp/all(page=${page.getNumber()-1})}"><b> PREVIOUS</b></a> &nbsp;
+     </span>  
+
+	<th:block th:each="i:${#numbers.sequence(0,page.totalPages-1)}">
+	       <a th:href="@{/emp/all(page=${i})}"><b>[[${i}+1]]</b></a> &nbsp;
+	</th:block>
+
+     <span th:if="${page.hasNext()}">
+        <a th:href="@{/emp/all(page=${page.number+1})}"><b> NEXT</b></a> &nbsp;
+     </span> 
+      <span th:if="${!page.isLast()}">
+        <a th:href="@{/emp/all(page=${page.totalPages-1})}"><b> LAST</b></a> &nbsp;
+     </span>  
+
+</body>
+</html>

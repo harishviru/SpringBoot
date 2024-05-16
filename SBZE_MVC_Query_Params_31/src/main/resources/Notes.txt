@@ -1,0 +1,222 @@
+*) Servlets | Query Parameters :- Passing data using Request URL in key=val format.
+  Format:   URL ? key=val & key=val & key=val
+
+https://www.google.com/search
+? source=hp 
+& q=india
+
+=> Above Parameters are sent From Browser to Server using Request URL that uses
+   Head Section in Http Request.
+=> Key and val are String type by default. Value can be converted into our type
+   by using parsing concept.
+
+Example:-  http://localhost:8080/show?pid=10
+// Reading Parameter
+String pid = request.getParameter("pid");
+//parsing data
+int id  = Integer.parseInt(pid);
+
+==================================================================================
+           Working with Query Parameters | Request Parameters in WEB MVC
+==================================================================================
+@RequestParam is the annotation given by WEB MVC to read Query Param / Request param
+in Controller#method.
+
+=> It also supports reading FORM inputs based on name="" attribute.
+
+=> Syntax:
+    @RequestParam("key") DataType localVariable
+
+=> If DataType is non-String type, then type cnversion also done.
+=> If key name and localvariableName are same then need not to provide key.
+
+   @RequestParam DataType key
+
+--Example Request------
+http://localhost:8080/show?eid=10&ename=A
+
+@RequestParam("eid") int id       
+// read data from eid key, parse data to int type and store in id variable
+@RequestParam("ename") String name
+// read data from ename key and store in name variable
+
+-----------code-------------------------------
+*) Controller:
+package in.nareshit.raghu.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+public class EmployeeController {
+
+	@GetMapping("/show")
+	public String readData(
+			//@RequestParam("eid") int id,
+			@RequestParam(value = "eid", required = false)int id,
+			//@RequestParam(value = "eid", required = false, defaultValue = "-1") int id,
+			//@RequestParam("ename") String name,
+			//@RequestParam(value = "ename", required = false) String name,
+			@RequestParam(value = "ename", required = false, defaultValue = "NONE") String name,
+			Model model
+			) 
+	{
+		model.addAttribute("id", id);
+		model.addAttribute("name", name);
+		System.out.println(id +"-" + name);
+		return "EmpData";
+	}
+}
+*) UI: EmpData.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>DATA IS : ${id}, ${name}</h3>
+</body>
+</html>
+
+
+*) Request URL:
+http://localhost:8080/show?eid=50&ename=SAM
+
+======Note========================================================================
+1. It supports data type conversion internally.
+  If we send wrong datatype value, then Http Status is : 400 BAD REQUEST
+  (Problem related to data).
+
+Ex URL:
+http://localhost:8080/show?eid=AAA&ename=ABC
+
+MethodArgumentTypeMismatchException: Failed to convert value of type 'java.lang.String'
+to required type 'int'; nested exception is 
+java.lang.NumberFormatException: For input string: "AAA"
+
+2. Every key is required, it is not optional.
+
+http://localhost:8080/show?eid=99
+
+MissingServletRequestParameterException: Required String parameter 'ename' is not present
+Http Status is : 400 BAD REQUEST
+
+Solution#1 Must pass all key=val using URL
+Solution#2 Make key as optional
+  new code : @RequestParam(value = "ename", required = false) String name
+Req:
+http://localhost:8080/show?eid=99
+Output is : id=99 , name = null [Null can not be printed at Browser]
+
+*) If we mark any key as optional by adding required=false then its default value is null.
+
+3. We can even modify Optional key-default value from null to any other value
+   using attribute defaultValue="<somevalue>"
+
+Code:-
+@RequestParam(value = "ename", required = false, defaultValue = "NONE") String name,
+Req:
+http://localhost:8080/show?eid=99
+Output is : id=99 , name = NONE
+
+
+4. If we mark primitive type (non-String type) like int,double, boolean types
+   keys as optional, then default value is null which can not be stored into variable.
+
+Ex:
+@RequestParam(value = "eid", required = false)int id
+
+Req:
+http://localhost:8080/show?ename=ABC
+
+Output:
+IllegalStateException: Optional int parameter 'eid' is present but cannot be translated 
+into a null value due to being declared as a primitive type.
+Consider declaring it as object wrapper for the corresponding primitive type.
+
+Solution#1** Convert int to Integer type
+
+@RequestParam(value = "eid", required = false)Integer id
+
+Req:
+http://localhost:8080/show?ename=ABC
+Output: (null),ABC
+
+Solution#2 Change default value
+
+@RequestParam(value = "eid", required = false, defaultValue="-1")int id
+
+Req:
+http://localhost:8080/show?ename=ABC
+Output: -1,ABC
+
+--------------------------------------------------------------------------
+5. We can pass key in any order for Request params.
+  (Order is not required to follow, binding is done based on key name matching).
+
+Req#1
+http://localhost:8080/show?ename=XYZ&eid=50
+Req#2
+http://localhost:8080/show?eid=50&ename=XYZ
+
+Above two Request results same data.
+
+6. If we pass extra params which are not present in code, they are ignored.
+   No Error/No Exception.
+
+http://localhost:8080/show?eid=50&ename=XYZ&desg=DEV
+
+Here desg=DEV is ignored by FC.
+
+7** If same key is repeated with different values then read that as Array/ListType
+  using RequestParam Annotation.
+
+In case of servlets it is equals to:
+String[] data = request.getParameterValues("prjs");
+
+**Controller code**
+package in.nareshit.raghu.controller;
+
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+public class EmployeeController {
+
+	@GetMapping("/show")
+	public String readData(
+			@RequestParam("eid") int id,
+			@RequestParam("ename") String name,
+			//@RequestParam("prj") String[] prjs,
+			@RequestParam("prj") List<String> prjs,
+			Model model
+			) 
+	{
+		model.addAttribute("id", id);
+		model.addAttribute("name", name);
+		model.addAttribute("prjs", prjs);
+		return "EmpData";
+	}
+}
+
+Request:
+http://localhost:8080/show?eid=50&ename=XYZ&prj=P1&prj=P2&prj=P3
+
+Output:
+DATA IS : 50, XYZ, [P1, P2, P3]
+---------------------------------------------------------------------
+/edit?eid=10
+/delete?eid=101
+/getOne?eid=101
+
+Q) How may char can we send using URL? (or) What is the max length of URL?
+A) 255 chars | 4KB size

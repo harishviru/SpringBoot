@@ -1,0 +1,117 @@
+C:\Users\Admin>mongo
+MongoDB shell version v3.6.23
+connecting to: mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("b63a631c-8943-49c4-a8e4-c077f1b17d91") }
+MongoDB server version: 3.6.23
+> use SBMongo
+switched to db SBMongo
+> db.auth("mroot","mroot")
+1
+> show collections
+book
+empl_col
+prod_col
+product
+student
+> db.prod_col.find().pretty()
+{
+        "_id" : ObjectId("6634657c978fa85587318017"),
+        "prodId" : 20,
+        "prodCode" : "ABC",
+        "prodCost" : 49,
+        "prodDisc" : 12.25,
+        "prodGst" : 5.88,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa85587318018"),
+        "prodId" : 1,
+        "prodCode" : "PEN",
+        "prodCost" : 20,
+        "prodDisc" : 5,
+        "prodGst" : 2.4,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa85587318019"),
+        "prodId" : 2,
+        "prodCode" : "ABC",
+        "prodCost" : 49,
+        "prodDisc" : 12.25,
+        "prodGst" : 5.88,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa8558731801a"),
+        "prodId" : 3,
+        "prodCode" : "DEF",
+        "prodCost" : 67,
+        "prodDisc" : 16.75,
+        "prodGst" : 8.04,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa8558731801b"),
+        "prodId" : 4,
+        "prodCode" : "GHI",
+        "prodCost" : 89,
+        "prodDisc" : 22.25,
+        "prodGst" : 10.68,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa8558731801c"),
+        "prodId" : 5,
+        "prodCode" : "LAP",
+        "prodCost" : 20,
+        "prodDisc" : 5,
+        "prodGst" : 2.4,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa8558731801d"),
+        "prodId" : 6,
+        "prodCode" : "FAN",
+        "prodCost" : 100,
+        "prodDisc" : 25,
+        "prodGst" : 12,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa8558731801e"),
+        "prodId" : 7,
+        "prodCode" : "GLASS",
+        "prodCost" : 10,
+        "prodDisc" : 2.5,
+        "prodGst" : 1.2,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa8558731801f"),
+        "prodId" : 8,
+        "prodCode" : "TEAP",
+        "prodCost" : 300,
+        "prodDisc" : 75,
+        "prodGst" : 36,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa85587318020"),
+        "prodId" : 9,
+        "prodCode" : "MOBILE",
+        "prodCost" : 811,
+        "prodDisc" : 202.75,
+        "prodGst" : 97.32,
+        "_class" : "com.har.journey.model.Product"
+}
+{
+        "_id" : ObjectId("6634657c978fa85587318021"),
+        "prodId" : 10,
+        "prodCode" : "ACTO",
+        "prodCost" : 124,
+        "prodDisc" : 31,
+        "prodGst" : 14.88,
+        "_class" : "com.har.journey.model.Product"
+}
+>
+

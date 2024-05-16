@@ -1,0 +1,45 @@
+
+#01. Save/Register User With Server
+-----------------------------------------------
+  POST    http://localhost:9090/user/save    SEND
+
+ Payload :
+ {
+  "name":"RAM",
+  "username":"RAM",
+  "password":"RAM",
+    "roles":["ADMIN","EMPLOYEE"]
+}
+
+Response :
+User 1 created Successfully..!
+
+
+
+ #02. Login or Generate the Token
+ --------------------------------------------------
+ POST    http://localhost:9090/user/login  SEND
+
+Payload :
+{
+  "username":"RAM",
+  "password":"RAM"
+
+}
+
+Response :
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJBQjI1NiIsInN1YiI6IlJBTSIsImlzcyI6IkhhcmlzaCIsImlhdCI6MTcxNDkxMTg5NywiZXhwIjoxNzE0OTEyNDk3fQ.o_Kja1RqJEpxb9KLfqfGVtO77-_qD8AjLN6RKuWkEPY",
+    "message": "Successfully Generated Token..!"
+}
+
+
+#03 . Access Resources of Application:
+------------------------------------------------------
+GET  http://localhost:9090/user/welcome   SEND
+
+Header :
+Authorization:eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJBQjI1NiIsInN1YiI6IlJBTSIsImlzcyI6IkhhcmlzaCIsImlhdCI6MTcxNDkxMjIyNiwiZXhwIjoxNzE0OTEyODI2fQ.rDD8gB8f-W3Xp-ORwkPbD3IXO7UBt_DHLbTtIFSqM6g
+
+Response :
+Welcome to JWT + Security RAM

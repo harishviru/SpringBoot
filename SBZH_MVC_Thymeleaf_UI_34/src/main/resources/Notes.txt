@@ -1,0 +1,106 @@
+
+	 Thymeleaf UI
+
+*) JSP - Java Server Page, to implement Dynamic UI in easy way compared to servlets.
+*) Every JSP file internally converted into one Servlet.
+*) JSP static and dynamic content both are converted into Servlet code.
+Ex:
+  <p>Hello Welcome</p>  => out.println("<p>Hello Welcome</p>");
+
+  <%
+     Date d = new Date(); => Date d = new Date();
+  %>
+
+  <c:forEach>    ..       => for(Type local:data) ...
+
+*) Sometimes in UI design static content will be more and dynamic content will be less.
+
+=====================================================================================
+Thymeleaf UI is also called as light weight(Less Memory) and faster execution 
+UI technology compared to JSP in Java.
+
+=> Thymeleaf file converts only dynamic content into Java code and after execution
+   add result back to same Page. Static content remains same in current page.
+
+=> Thymeleaf file is saved with extension .html , but it can have tags related to
+   static and dynamic.
+
+=> Dynamic tags specific to thymeleaf start with one common prefix 'th'.
+=> All Thymeleaf tags are defined and stored in a server (namespace)
+   https://www.thymeleaf.org/
+
+***namespace is location where tags are defined/placed.
+
+=> We should provide thymeleaf namespace at <html> tag level.
+  <html xmlns:th="https://www.thymeleaf.org/">
+  <html>
+
+=> Spring boot thymeleaf starter provides THYMELEAF-ENGINE that will read only
+   thymeleaf tags, those are converted and processed, finally result added to
+   Thymeleaf File.
+
+pom.xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+
+=> By Default thymeleaf starter provides prefix and suffix with default values.
+  spring.thymeleaf.prefix=classpath:/templates/
+  spring.thymeleaf.suffix=.html
+
+** We can change only prefix, not suffix.
+
+
+------------------------------Thymeleaf Tags and Symbols------------------------------------
+${key}                   - Read the data from Model/Container
+
+@{/path}                 - Form Action/URL/HyperLinks.(must provide full path=Controller path+method Path)
+
+*{variable}               -only used for FORM <input/>s for two way binding. (BiDirectional).
+
+<div th:text=""></div>   - Print data at UI (like out.println)
+
+<div th:each="tempVar:${collectionVariable}"></div> -: For Each-loop
+
+
+<div th:switch="${value}"></div.       - Switch 
+
+Add External Script file to Thymeleaf:
+  <script type="text/javascript" th:src="@{/path}"></script>
+
+Link External CSS file
+  <link rel="stylesheet" th:href="@{/path}"/>
+  
+HyperLink:
+  <a th:href="@{/path}">DELETE</a>
+
+Form tag :
+  <form th:action="@{/path}" method="POST" th:object="${modelClsObj}">
+  </form>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

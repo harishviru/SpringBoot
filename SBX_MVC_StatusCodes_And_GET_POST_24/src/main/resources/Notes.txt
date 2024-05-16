@@ -1,0 +1,227 @@
+DispatcherServlet:
+-------------------------
+=> Here, DispatcherServlet is a pre-defined class.
+   When ever any request is made then here doDispatch() method is called.
+      DispatcherServlet#doDispatch() 
+
+=> It will read HandlerMapping to get Controller details
+   and uses ViewResolver Help to find out ViewPage(UI).
+
+=> Pre-defined classes : ctrl+shift+T  (open type) Enter full or partial name > double click on matching
+=> Programmer -defined class : ctrl+shift+R (open resource)
+
+=> Manual configuration is required for DispatcherServlet with details like
+   Base-package, properties file, Database/ORM/JPA/Email/Security....configuration..etc
+   in Spring web mvc (not boot)
+
+---Example code--
+1.
+
+package in.nit;
+
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class DbConfig {
+
+	//DataSource
+	//SessionFactory
+}
+
+
+2.
+package in.nit;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+
+@Configuration
+@ComponentScan("in.nit")
+@PropertySource("classpath:app.properties")
+public class AppConfig {
+
+	@Bean
+	public InternalResourceViewResolver viewResolver() {
+		return new InternalResourceViewResolver("/WEB-INF/pages/", ".jsp");
+	}
+}
+
+
+3.
+package in.nit;
+
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+public class AppInit extends AbstractAnnotationConfigDispatcherServletInitializer{
+
+	@Override
+	protected Class<?>[] getRootConfigClasses() {
+		return new Class[] {DbConfig.class};
+	}
+
+	@Override
+	protected Class<?>[] getServletConfigClasses() {
+		return new Class[] {AppConfig.class};
+	}
+
+	@Override
+	protected String[] getServletMappings() {
+		return new String[] {"/"};
+	}
+
+}
+-----------------------------------------------------------------------------
+*) Common HTTP Status Codes:
+a. Http Status : 200 (OK) 
+  If request is processed by controller without any exception and response given to
+  browser properly then it is Success-200(OK).
+
+b. Http Status: 404 (NOT FOUND)
+=> URL is case-sensitive (ie /show, /SHOW, /Show ... are different).
+  If Request URL is not matched with any Controller method, then FC returns
+  Http Staus 404 (NOT FOUND)
+
+c. ***Http Status: 405 (Method Not Allowed)
+  If Request URL is matched and Http Method type is not matched, then FC returns
+  Http Status :405 Method Not allowed.
+
+ex: Request: /show, GET but code has /show with POST type.
+
+d. Http Status : 500 (INTERNAL SERVER ERROR)
+  If request URL is matching and FC is executing controller method,
+  then Controller#method is thowng exception, in that case FC returns 
+  Http Status 500 : INTERNAL SERVER ERROR.
+---------------------------------------------------------------------
+
+*) Create File: Home.jsp , DO NOT CREATE FILE : contact
+
+=> Enter URLs as given below
+if We enter below URL's and result :
+    i)http://localhost:9090/abc            :  404 (NOT FOUND)
+   ii)http://localhost:9090/find           : 405 (Method Not Allowed)  
+ iii)http://localhost:9090/showc        : 404 (NOT FOUND) [Here contact page is not found]
+ iv)http://localhost:9090/showd        : 500 (INTERNAL SERVER ERROR)
+ v)http://localhost:9090/show           : 200 (OK) 
+
+	
+
+=========================Ex case====================================================
+If we enter URL: /show (GET) in browser, display---> HomePage.jsp
+
+HomePage.jsp Should contain one Link and HTML Form
+On click Link : View All , make Request: /view (GET), that should display: DataPage.jsp
+
+On click Form Submit, make Request: /register (POST), should display: SuccessPage.jsp
+
+--code---
+1. Controller class
+
+package com.har.journey.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+
+/** If we enter URL: /showe (GET) in browser, display---> HomePage.jsp
+        HomePage.jsp Should contain one Link and HTML Form
+           On click Link : View All , make Request: /view (GET), that should display: DataPage.jsp
+           On click Form Submit, make Request: /register (POST), should display: SuccessPage.jsp
+*/
+
+@Controller
+public class EmployeeController {
+
+	
+	/** If we enter URL : /showe (GET) in browser,
+	 *    display --> HomePage.jsp
+	 * 
+	 * 
+	 */
+	@RequestMapping("/showe")
+	public String showData() {
+		return "HomePage";
+	}
+	
+	/** On click Link : View All , make Request: /view (GET), 
+	 * that should display: DataPage.jsp
+	 * 
+	 */
+	@RequestMapping("/view")
+	public String showView() {
+		return "DataPage";
+	}
+	
+	/**
+	 * On click Form Submit, make Request: /register (POST), 
+	 * should display: SuccessPage.jsp
+	 * 
+	 */
+	@RequestMapping(value="/register",method = RequestMethod.POST)
+	public String showRegister() {
+		return "SuccessPage";
+	}
+	
+	
+	
+	
+	
+}
+
+
+2. UIPages
+
+a) HomePage.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+            <h2> Welcome to HomePage </h2>
+            
+         <a href="view">View All </a>
+       
+       <hr/>
+       
+       <form action="register" method="POST">
+              <input type="submit" value="register">
+       </form>
+
+
+</body>
+</html>
+-------------------
+b)DataPage.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+    <h2> Welcome to DataPage (onclick on achor Tag + GET)</h2>
+</body>
+</html>
+-------------
+c) SuccessPage.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+   <h2> Welcome to SuccessPage (on form submit + POST )</h2>
+
+</body>
+</html>

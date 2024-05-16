@@ -1,0 +1,91 @@
+
+                                              Sending data from controller to UI and UI to controller
+                                              -------------------------------------------------------
+
+1)Sending data from controller to UI
+     a)Model(I)
+     b)ModelAndView(c)
+     c)ModelMap
+     d)Map
+2)Sending data from UI to controller.
+  a)HTML Forms
+  b)Paramters
+  -----------------------------------------------------------------------------------------------------------------------------
+
+
+1)Sending Data from Controller to UI
+ a) Model (I)
+   addAttribute(key,val) [Method]
+   UI: EL ${key}
+
+*) We can trasfer Primitivie Type, Object Type, Collection Data..etc.
+
+*) Object ob=3; //AutoBox + Upcasting.
+
+ //3 --> int type ---> converted to Integer (AutoBoxing) ---> 
+ // converted to Number -> converted to Object(upcasting)
+
+   Object ob=false;
+   Object ob='A';
+   Object ob=10.3;
+   Object ob=new Employee();
+   Object ob=new ArrayList<String>();
+
+
+*) Internally Model memory is shared as a Map between Controller to UI using FC
+  it is like sending data from Servlet  --->  to Servlet/JSP 
+  Data is transfred using Scopes with attributes.
+
+  Add data:
+  req.setAttribute(key,val);
+
+  Trasfer Request  (req.getReqDisp(req,resp))
+
+  Read data:
+  val=req.getAttribute(key);
+
+** Model(I) its impl class is : BindingAwareModelMap(C) 
+
+
+====================================================================
+*)Note:
+a) We can send Any type of data from controller to UI using Model.
+b) Model(I) Impl class is BindingAwareModelMap(C).
+c) If we send Object Data or collection data and we are priting using EL
+   like ${key} then it internally calls toString() method.
+d) All Collections are implemented toString() method
+  List/Set Type : [Val, Val, Val, Val]
+  Map Type      : {key=val, key=val, key=val}
+e) We can read object data using its variables/propreties  
+   at UI with syntax: ${key.variableName}
+   which calls getVariable() internally from object.
+   ex:  ${emp.empId}  [Equal java code is emp.getEmpId()]
+
+f)** In realtime, mostly send data from Controller to UI is List.
+  ex: List<String>, List<Employee> , List<Object[]>
+
+==================================================================
+JSTL - JSP Standard Tag Library
+*)TAG LIBs: Writing Java code at UI using tags Format
+
+Core java:
+for(DataType localVar:keyName) {  .. } 
+
+UI: forEach tag
+<c:forEach items="${keyName}" var="localVar">
+  ...
+</c:forEach>
+
+
+             <dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
+		</dependency>

@@ -1,0 +1,43 @@
+
+		Stored Procedures Calls using Hibernate with JPA
+         ---------------------------------------------
+*) ToDo coding using Sun Microsystems JPA API, use
+      EntityManagerFactory | EntityManager.
+  DO NOT USE ANY VENDOR implementation directly, like
+  Hibernate: SessionFactory | Session.
+
+
+=> To execute any ORM based operation Use EntityManager.
+   ie insert,update, delete and select..etc.
+
+=> EntityManager even supports calling Stored Procedures by using
+   StoredProcedureQuery. 
+
+=> StoredProcedureQuery is used to call on Stored Procedure which is defined at DB.
+
+===========================================================================
+MySQL Database Stored Procedures:
+
+1. No IN and OUT Params. (SELECT query data is final output)
+DELIMITER $$
+CREATE PROCEDURE GETALLEMPS()
+	BEGIN
+		SELECT * FROM EMPLOYEE;
+	END$$
+DELIMITER ;
+
+2. Only IN param, No OUT param.
+DELIMITER $$
+CREATE PROCEDURE GETEMPBYDEPT(IN edept VARCHAR(25))
+ BEGIN
+   SELECT * FROM EMPLOYEE E WHERE  E.EMP_DEPT = edept;
+ END $$
+DELIMITER ;
+
+3. Using both IN and OUT Parameters
+DELIMITER $$
+CREATE PROCEDURE GETEMPBYDESGCOUNT(IN edesg VARCHAR(25), OUT dcount INT)
+ BEGIN
+   SELECT COUNT(*) INTO dcount FROM EMPLOYEE E WHERE  E.emp_desg = edesg;
+ END $$
+DELIMITER ;

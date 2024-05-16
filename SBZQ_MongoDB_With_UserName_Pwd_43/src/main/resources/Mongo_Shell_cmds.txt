@@ -1,0 +1,57 @@
+Microsoft Windows [Version 10.0.19045.4291]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\Admin>mongo
+MongoDB shell version v3.6.23
+connecting to: mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("587d51eb-62be-43f1-8551-d874c984f779") }
+MongoDB server version: 3.6.23
+> show dbs
+2024-05-01T10:00:44.873+0530 E QUERY    [thread1] Error: listDatabases failed:{
+        "ok" : 0,
+        "errmsg" : "there are no users authenticated",
+        "code" : 13,
+        "codeName" : "Unauthorized"
+} :
+_getErrorWithCode@src/mongo/shell/utils.js:25:13
+Mongo.prototype.getDBs@src/mongo/shell/mongo.js:79:1
+shellHelper.show@src/mongo/shell/utils.js:860:19
+shellHelper@src/mongo/shell/utils.js:750:15
+@(shellhelp2):1:1
+> db.auth("mroot","mroot")
+Error: Authentication failed.
+0
+> show dbs
+2024-05-01T10:01:28.420+0530 E QUERY    [thread1] Error: listDatabases failed:{
+        "ok" : 0,
+        "errmsg" : "there are no users authenticated",
+        "code" : 13,
+        "codeName" : "Unauthorized"
+} :
+_getErrorWithCode@src/mongo/shell/utils.js:25:13
+Mongo.prototype.getDBs@src/mongo/shell/mongo.js:79:1
+shellHelper.show@src/mongo/shell/utils.js:860:19
+shellHelper@src/mongo/shell/utils.js:750:15
+@(shellhelp2):1:1
+> db.auth("mroot","mroot")
+Error: Authentication failed.
+0
+> use SBMongo
+switched to db SBMongo
+> db.auth("mroot","mroot")
+1
+> db.logout()
+{ "ok" : 1 }
+> db.auth("mroot","mroot")
+1
+> show collections
+empl_col
+student
+> db.student.find().pretty()
+{
+        "_id" : 101,
+        "sName" : "A",
+        "sfee" : 250,
+        "_class" : "com.har.journey.model.Student"
+}
+>

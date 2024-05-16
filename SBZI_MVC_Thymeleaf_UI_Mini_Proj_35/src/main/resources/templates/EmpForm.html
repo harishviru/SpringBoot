@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Employee Form</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+   <div class="container">
+		<h2 align="center">Employee Registeration Form</h2>
+		<form th:action="@{/emp/save}" method="post" th:object="${empObj}">
+
+			<div class="row">
+				<div class="col">
+					<label class="form-label">EmpName :</label>
+				</div>
+				<div class="col">
+					<input type="text" th:field="*{empName}" class="form-control" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label class="form-label">EmpEmail :</label>
+				</div>
+				<div class="col">
+					<input type="text" th:field="*{empEmail}"  class="form-control" /> <span style="color:red;" id="empEmailErr"></span>
+				</div>
+			</div>
+			
+			
+			<div class="row">
+				<div class="col">
+					<label class="form-label">EmpSal :</label>
+				</div>
+				<div class="col">
+					<input type="text" th:field="*{empSal}"  class="form-control" /> 
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col">
+					<label class="form-label">EmpGender :</label>
+				</div>
+				<div class="col">
+					<input type="radio" th:field="*{empGender}" value="Male" class="form-check-input" />Male    
+                     <input type="radio" th:field="*{empGender}" value="Female" class="form-check-input" />Female
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col">
+					<label class="form-label">EmpFavColors :</label>
+				</div>
+				<div class="col">
+					<input type="checkbox" th:field="*{empFavColors}" value="RED" class="form-check-input" />RED
+                     <input type="checkbox" th:field="*{empFavColors}"  value="GREEN" class="form-check-input" />GREEN
+                     <input type="checkbox" th:field="*{empFavColors}"  value="BLUE" class="form-check-input" />BLUE
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label class="form-label">EmpDept :</label>
+				</div>
+				<div class="col">
+					<select th:field="*{empDept}" class="form-select">
+				                   <option value="">--SELECT--</option>
+				                    <option value="DEV">DEV</option>
+				      				<option value="QA">QA</option>
+				                    <option value="BA">BA</option>
+				                    <option value="MGR">MGR</option>
+			            </select>
+				</div>
+			</div>
+			<br/>
+			<div class="row">
+				<div class="col">
+					<label class="form-label">EmpPrjs :</label>
+				</div>
+				<div class="col">
+					<select th:field="*{empPrjs}" multiple="multiple" class="form-select" >
+				                     <option value="">--SELECT--</option>
+				                     <option value="HCL">HCL</option>
+				                     <option value="TCS">TCS</option>
+				                     <option value="WIPRO">WIPRO</option>
+			                         <option value="RNT">RNT</option>
+			            </select>
+				</div>
+			</div>
+                 <br/>
+			<input type="submit" value="Save Employee" class="btn btn-success">
+		</form>
+		 <div th:text=${empMsg}></div>
+	</div>
+        
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#empEmail").change(function(){
+		$.ajax({
+			url:"checkEmail",
+			data:{email:$("#empEmail").val()},
+			success:function(respTxt){
+				$("#empEmailErr").text(respTxt);
+				console.log("respTxt :"+respTxt);
+			}
+		});
+	});
+	
+});
+</script>
+</body>
+</html>

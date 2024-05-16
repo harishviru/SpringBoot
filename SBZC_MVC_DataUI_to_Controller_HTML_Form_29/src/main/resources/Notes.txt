@@ -1,0 +1,57 @@
+
+) Sending Data from UI to Controller :-
+a) HTML Form
+b) Parameters
+
+a) HTML Form | ModelAttribute (commandName):-
+ This is commonly used concept in applications.
+ Ex: Register Form, Login Form, Payment Form, Comment Form, Enquery From..etc
+
+*) On click submit button, HTML form data is converted into Object Format by
+   Spring Container in below 4 steps, they are:
+
+a) Create Object  (Ex: Employee e = new Employee())
+b) Read Form Input Data ( Ex: String  sid = request.getParameter("id") /String type)
+c) Parse Data if required (Ex: int id = Integer.parseInt(sid))
+d) Set data to object (ex: e.setId(id))
+
+*) Here, programmer has to follow below steps,
+a) Create one class (Model class) for one HTML FORM
+b) Define variables (No.of Form Inputs = No.of Variables)
+c) Form Input name (name="" attribute) must have variableName
+   <input type="" name="variableName" ..
+   <select name="variableName"..
+   <textarea name="variableName"..
+
+*) Note: Spring container provide object Name for Model Attributes as 
+   CamelCase Rule for ObjectName using ClassName(ie className, first letter lowercase)
+   Ex: className : EmployeeInfo , objectName: employeeInfo.
+
+*) To read this object in Controller class, follow below syntax
+
+     @ModelAttribute("objectName") ClassName  localVariableName
+
+                  --or--
+
+     @ModelAttribute  ClassName  objectName
+
+------------------------------------------------------------------------------------
+	@PostMapping("/add")
+	public String readData(
+			//@ModelAttribute("employee") Employee eob
+			@ModelAttribute Employee employee,
+			Model model
+			) 
+	{
+		System.out.println(employee);
+		model.addAttribute("emp", employee);
+		return "EmpData";
+	}
+*)Equal servlets code:
+	req.setAttribute("emp",employee);
+	RD rd=req.getReqDisp("EmpData.jsp");
+	rd.forward(req,resp);
+
+Q) Difference between ModelAttribute and Model?
+A) Model : Send data from Controller to UI
+   ModelAttribute : Send form data from UI to Controller

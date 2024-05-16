@@ -1,0 +1,22 @@
+
+Spring Boot Data JPA by default supports connecting with One Database 
+Database connection Configuration (AutoConfigured) is given by Spring Boot only.
+
+We need to pass inputs using either properties (or) yml
+Like: driver class url username password  show-sql dialect ddl-auto ..etc
+
+=> This time i want to to multiple databases.
+=> We need to define below objects(Beans) in order:
+  a. DataSource
+  b. EntityManagerFactory
+  c. TransactionManager
+
+  by using Spring Java Configuration Style:
+@Configuration
+public class ____ {
+  //no.of methods = no.of objects
+  @Bean
+  public <class/interface> <objName>(){
+  
+  }
+}

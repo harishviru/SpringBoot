@@ -1,0 +1,142 @@
+
+                                           SendRedirect| @PathVariable | ModelAndView ,ModelMap  |File Upload 
+					   ------------------------------------------------------------------------------------------------------
+SendRedirect :
+--------------------
+                      syntax = redirect:<path>
+                     
+->We can compare with response.sendRedirect(<path>) in Servlets.
+
+Ex:
+----
+     @GetMapping("/show")
+	public String show() {
+		System.out.println("*************FROM SHOW*************");
+	  //return "redirect:/showa";  // redirect to 
+		return "redirect:showa"; 
+	}
+	
+	
+	@GetMapping("/showa")
+	public String showA() {
+		System.out.println("*************FROM SHOWA*************");
+		return "Home";
+	}
+
+
+@PathVariable :
+-----------------------
+>It indicates that a method parameter should be bound to a URI templatevariable.
+                      URL : http://localhost:9090/showb/{templateVar1}
+		       
+                syntax =
+		                 i)@PathVariable <DataType> localVariableName  
+				 Here we must match  templateVar1  with localVariableName
+				 
+				 ii)@PathVariable(value = "<templateVar1}>") <DataType> localVariableName
+                                  Here we must match  templateVar1  with pathVariable value
+
+>If templateVariable is not matched then we get exception like
+
+org.springframework.web.bind.MissingPathVariableException: 
+Required URI template variable 'empName1' for method parameter type String is not present
+
+>By default it true (We must have pass value)
+Ex:
+-----
+@GetMapping("/showb/{empName}")
+	public String showB(@PathVariable(value = "empName") String name) {
+		 System.out.println("*************FROM SHOWB*************" +name);
+		return "Home";
+	}
+
+>We need to follow order which was mentioned in the URL.
+   URL :  http://localhost:9090/showd/<templateVar1>/api/<templateVar1>
+             http://localhost:9090/showd/abc/api/123  Here empName : abc , id=123
+              http://localhost:9090/showd/123/api/abc  (X) No order followed : MissingPathVariableException
+
+     @GetMapping("/showd/{empName}/api/{id}")
+	public String showD(@PathVariable(value = "empName") String name ,@PathVariable Integer id) {
+		System.out.println("*************FROM SHOWD*************" +name +"  "+id);
+		return "Home";
+	}
+>If we want make optional then we need follow like these
+      i)Define show URI with pathVariable and without pathVariable in @__Mapping Annotation
+      ii)Then make optional by adding attribute like required = false in  @PathVariable
+Ex:
+----
+      @GetMapping(value={"/showe/api","/showe/api/{empName}"})
+	public String showE(@PathVariable(value = "empName",required = false) String name ) {
+		System.out.println("*************FROM SHOWE*************" +name);
+		return "Home";
+	}
+
+> We can Map to collect  @Pathvariable values
+Ex:
+---
+@GetMapping(value="/showf/{apiVersion}/{empName}")
+	public String showF(@PathVariable Map<String, String> pathVarsMap) {
+		System.out.println("*************FROM SHOWE*************" +pathVarsMap);
+		return "Home";
+	}
+
+ModelAndView ,ModelMap:
+--------------------------------------
+>if  Controller method doesn't have return type ,then Frontcontroller will take path value as
+view name.
+ Ex :    URL : http://localhost:9090/showg/abcd
+
+ Method :
+       @GetMapping(value="/showg/abcd")
+	public void showG() {
+		System.out.println("*************FROM SHOWG*************");
+	}
+Exception:
+----------------
+There was an unexpected error (type=Not Found, status=404).
+JSP file [/WEB-INF/pages/showg/abcd.jsp] not found
+
+
+Ex: ModelAndView : Support to add viewName and model object
+---
+     @GetMapping(value="/showg/abcd")
+	public ModelAndView showG() {
+		System.out.println("*************FROM SHOWG*************");
+		
+		ModelAndView modelandView =new ModelAndView();
+		modelandView.setViewName("Home1");        // viewName
+		modelandView.addObject("emp", "Harish");  // Model object      
+		return modelandView;
+	}
+
+Ex: ModelMap : Support to model object (No Support to add view name)
+---
+	@GetMapping(value="/showi")
+	public String showI(ModelMap modelMap) {
+		System.out.println("*************FROM SHOWI*************");
+		
+		modelMap.addAttribute("emp", "Harish");   
+		return "Home1";
+	}
+
+FileUpload :
+-----------------
+> By Using MultipartFile we can upload file.
+
+Ex : Without Model class
+----
+      @PostMapping(value="/upload")
+	public String upload(MultipartFile file) {
+		System.out.println("*************FROM upload*************"+file.getOriginalFilename() +" :" +file.getSize());
+		
+		return "Home";
+	}
+
+Ex : With Model class
+----
+      @PostMapping(value="/empUpload")
+	public String empUpload(@ModelAttribute Employee employee ,MultipartFile empResume) {
+		System.out.println("employee :"+employee);
+		System.out.println("*************FROM empUpload*************"+empResume.getOriginalFilename() +" :" +empResume.getSize());
+		return "Home";
+	}

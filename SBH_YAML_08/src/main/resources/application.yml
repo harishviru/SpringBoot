@@ -1,0 +1,16 @@
+my:
+ app:
+  pid: 101
+  pcode: IIT
+  pcost: 290.0
+  colors:
+   - R
+   - G
+   - B
+  marks:
+    english: 78
+    maths: 98
+    social: 96
+  ven:
+   vcode: MIT
+   vname: Cigniti

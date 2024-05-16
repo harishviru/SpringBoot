@@ -1,0 +1,11 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /myapp
+spring:
+  application:
+    name: SBZ_MVC_NewAnnotation
+  mvc:
+    view:
+      prefix: /WEB-INF/pages/
+      suffix: .jsp

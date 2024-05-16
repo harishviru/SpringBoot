@@ -1,0 +1,92 @@
+		  HTML Form -- EXAMPLE#2
+
+*) If we add multiple inputs at FORM then equal no.of variables must be added
+   at Model class.
+
+
+*) Incase of multi-select DropDown (<select name="" multiple>)
+   and Checkboxes (<input type="checkbox"...)
+   define variable in model class with List type.
+
+=> Supported types Array Type, List Type and Set Type.
+
+   String[]     data;  //can not be stored in DB (using ORM).
+   List<String> data;  //duplicates, index based store
+   Set<String>  data;  // no-duplicates (non-index)
+
+  =============================================================================
+				Bi-Directional Form    (Spring Form Tag Libraray)
+  =============================================================================
+ Normal HTML Form is uni-directional, that means HTML FORM data can be converted 
+ into one object on click submit. But, Object data can not be converted back to
+ HTML Form (Like Edit Operation).
+
+ In this case use "SPRING FORM TAG LIBRARY". 
+ 
+
+#1. [TEXT INPUT]
+HTML Code: 
+  <input type="text" name="empId" id="empId" />
+
+Spring Code:
+  <form:input path="empId" />
+
+*** Here, path indicates variable Name and it generates name="" and id="" attributes.
+
+#2. [PASSWORD INPUT]
+HTML Code: 
+  <input type="password" name="empPwd" id="empPwd" />
+
+Spring Code:
+  <form:password path="empPwd" />
+
+#3. [RADIO BUTTON INPUT]
+HTML Code: 
+  <input type="radio" name="empGen" id="empGen" value="Male" /> Male
+
+Spring Code:
+  <form:radiobutton path="empPwd" value="Male" /> Male
+
+
+#4. [CHECK BOX INPUT]
+HTML Code: 
+  <input type="checkbox" name="empLang" id="empLang" value="ENG" /> ENG
+
+Spring Code:
+  <form:checkbox path="empLang" value="ENG" /> ENG
+
+
+#5. [TEXT AREA INPUT]
+HTML Code: 
+  <textarea name="empAddr" id="empAddr"></textarea>
+
+Spring Code:
+  <form:textarea path="empAddr" />
+
+#6. [DROP DOWN INPUT]
+HTM Code:
+  <select name="empPrj" id="empPrj">
+      <option value="HTC">HTC</option>
+  </select>
+
+Spring Code:
+<form:select path="empPrj">
+   <form:option value="HTC">HTC</form:option>
+</form:select>
+
+#7. [FORM TAG]
+HTML Code:
+  <form action="add" method="POST">
+
+Spring Code:
+  <form:form action="add" method="POST" modelAttribute="objectName">
+
+
+*)Note:
+=> To display Spring FORM (with no values) even we need to pass one object  
+   (wihtout values set). Bcoz always Form Connected to Object.
+
+java.lang.IllegalStateException: Neither BindingResult nor plain target object for bean name 'employee' available as request attribute
+
+=> To work with Spring Form Tag library we must add below line at the top of JSP page
+<%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>

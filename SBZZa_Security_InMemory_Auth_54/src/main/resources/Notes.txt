@@ -1,0 +1,481 @@
+                                              Spring Security
+					      -------------------------
+==============================================================
+	                                   Sesssion -I
+ 		   JAAS - Java Authentication and Authorization Service
+==============================================================
+Authentication :- Read username/password , validate them.
+
+Authorization :- Role Management.
+
+Ex: Bank Application
+Roles:
+Manager
+Clerk
+User
+
+*) User: View Balancer, Open FD/RD, Trasfer Money,....etc
+*) Manager: Approve Loans, View Employees, View Branch Information..etc
+*) Clerk: Deposites/Withdraws, print statements,...etc
+
+*) Filter(I) [javax.servlet]
+ To execute PRE-PROCESSING logic over request object (before going to Servlet)
+ and POST-PROCESING logic over response object (after coming from Servlet).
+ 
+*) DelegatingFilterProxy(C) [org.springframework.web.filter]
+   This is a pre-defined filter, given by Spring Security.
+   To will process only request (For JAAS).
+
+---------------------------------
+Authorization Type:-
+
+a) permitAll  : No Security required to access current PAGE/Path
+ Ex URLs:  /loging, /home, /contactUs ..etc
+
+b) authenticated : Login Required (un/pwd) + No Role Required
+ Ex: /inbox, /settings, ..etc
+
+c) has-authority : Login Required (un/pwd) + matching role required.
+
+ex:  /approveLoan + MANAGER
+     /blockUser   + ADMIN
+
+
+** HttpStatus:-
+*) In case of Request URL comes under authenticated type and Login person
+   has provided invaild username/password, then Http Status code: 401, "Unauthorized".
+
+*) In case of Request URL comes under has-authority type and Login success,
+   but Role is not matching, then Http Status cod: 403, "Forbidden".
+
+Form , Token(JWT/OAuth)
+
+--------API Details--------------------------------------------------
+package :org.springframework.security.config.annotation.web.configuration
+class : WebSecurityConfigurerAdapter 
+
+Methods
+configure(AuthenticationManagerBuilder):void
+configure(HttpSecurity):void
+
+*) We need to define one class that extends WebSecurityConfigurerAdapter(AC)
+  and override two methods. Sample code give as:
+
+
+package in.nareshit.raghu.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@EnableWebSecurity
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
+
+	//authentication
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		
+	}
+	
+	//authorization
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+	
+	}
+}
+
+
+*) PasswordEncoder:
+(Encode and Decode)
+Encode : Convert readable data into unreadable format
+  ex: Hello => higb%52Jshtg
+
+Decode : Encoded data convreting back into readable format
+  Ex: higb%52Jshtg => Hello
+
+Here, PasswordEncoder is a interface given by Spring Security.
+In Security Programming PasswordEncoder must be provided.
+PasswordEncoder is used to store enduser password in database as unreadable format.
+We should use any one impl class object.
+Ex: NoOpPasswordEncoder(C), BCryptPasswordEncoder(C)
+
+To avoid password encoding (Store Password in Plain Text Format) use NoOpPasswordEncoder.
+To convert password use BCryptPasswordEncoder(C).
+
+--Sample code-----
+package in.nareshit.raghu.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+@Configuration
+public class AppConfig {
+
+	@Bean
+	public BCryptPasswordEncoder pwdEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+}
+-----------
+package in.nareshit.raghu.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+@EnableWebSecurity
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
+
+	@Autowired
+	private BCryptPasswordEncoder pwdEncoder;
+	
+	//authentication
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		
+	}
+	
+	//authorization
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+	
+	}
+}
+==================================================================================
+Types of Authentication:- Where to store user data ?? fetch data from source given
+   and compare with login data.(Validate user login)
+
+
+*) inMemoryAuthentication :- 
+     Store data in RAM and validate data/login when request comes. 
+              [Testing Purpose/ Dev Purpose...]
+ex:
+auth.inMemoryAuthentication().withUser("A").password("B").authorities("ADMIN");
+auth.inMemoryAuthentication().withUser("M").password("N").authorities("EMPLOYEE");
+auth.inMemoryAuthentication().withUser("K").password("Y").authorities("STUDENT");
+
+
+*) jdbcAuthentication :-
+   Store data in Database and validate data/login when request comes. 
+   But it works based on SQL queries (given by programmer)
+
+***) userDetailsService :-
+  Store data in Database and validate data/login when request comes. 
+  It works based on ORM(Spring Data JPA).
+====================================================================
+				     Session-II
+====================================================================
+*)AuthenticationManager:-
+InMemory (RAM) AuthenticationManager
+JDBC (DB/SQL) AuthenticationManager
+UserDetailsService(ORM)AuthenticationManager
+
+*) InMemory (RAM) AuthenticationManager:- Dev/Test
+
+     ------------------------RAM-------------------------
+     |   username     |  password     |   authorities   |
+     ----------------------------------------------------
+     |    sam         |    sam        |   ADMIN         |
+     |    syed        |    syed       |   EMPLOYEE      |
+     |    jai         |    jai        |   STUDENT       |
+     ----------------------------------------------------
+
+
+--Example code---
+auth.inMemoryAuthentication().withUser("sam").password("{noop}sam").authorities("ADMIN");
+auth.inMemoryAuthentication().withUser("syed").password("{noop}syed").authorities("EMPLOYEE");
+auth.inMemoryAuthentication().withUser("jai").password("{noop}jai").authorities("STUDENT");
+
+*) Ex: HomeController (class)
+ -------------------------------------------------------------------
+    URL                      UI                       Access Details
+ -------------------------------------------------------------------
+   /home                  HomePage.html       (permitAll)every one can access
+   /welcome               WelcomePage.html    (authenticated) only login users
+						[No Role required]
+   /admin                 AdminPage.html      (hasAuthority[ADMIN]) login + role-ADMIN
+   /emp                   EmployeePage.html   (hasAuthority[EMPLOYEE]) login + role-EMPLOYEE
+   /std                   StudentPage.html    (hasAuthority[STUDENT]) login + role-STUDENT
+
+
+*) antMatchers(path) : This method is used to match(compare) request URL(Path)
+   with Controller#method URL(path), if they are matched then its connected
+   authority type [permitAll()/authenticated()/hasAuthority()] is selected.
+
+---Examples---------------
+1. /register can be accessed by every one 
+
+.antMatchers("/register").permitAll()
+
+2. /inbox can be accessed by User after login (any role is fine)
+
+.antMatchers("/inbox").authenticated()
+
+3. /exportData can be accessed by User after login having role - ADMIN
+
+.antMatchers("/exportData").hasAuthority("ADMIN")
+
+4. /import  can be accessed by User after login having role - (any one of) ADMIN, EMPLOYEE, STUDENT
+
+.antMatchers("/import").hasAnyAuthority("ADMIN","EMPLOYEE","STUDENT")
+
+5. /login with GET type can be accessed by every one
+
+.antMatchers(HttpMethod.GET, "/login").permitAll()
+
+6. /save with POST type can be accessed by any user after login (any role is fine)
+
+.antMatchers(HttpMethod.POST,"/save").authenticated()
+
+-----------------------------------------------------------------
+anyRequest():-
+ It indicates non-configured URLs  which are in Application(Controller paths)
+ (ie antMatchers not provided URLs).
+
+Consider Example: Project has 5 URLs at Controller method level.
+URLs(paths) : /show, /save, /export, /delete, /import
+
+
+.antMatchers("/show").permitAll()
+.antMatchers("/export").permitAll()
+.antMatchers("/save").hasAuthority("ADMIN")
+.anyRequest().authenticated()
+
+Her .anyRequest() indicates /delete and /import URLs which can be configured using
+ any access type [permitAll()/authenticated()/hasAuthority(T)].
+
+
+sample code:
+		http.authorizeRequests()
+		.antMatchers("/home").permitAll()
+		.antMatchers("/welcome").authenticated()
+		.antMatchers("/admin").hasAuthority("ADMIN")
+		.antMatchers("/emp").hasAuthority("EMPLOYEE")
+		.antMatchers("/std").hasAuthority("STUDENT")
+		.anyRequest().authenticated()
+		
+		//Login Form Details
+		.and()
+		.formLogin()
+		.defaultSuccessUrl("/welcome", true)
+		
+		//Logout Details
+		.and()
+		.logout()
+		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+		
+		// Exception Details
+		.and()
+		.exceptionHandling()
+		.accessDeniedPage("/denied")
+		;
+=============================================================
+				    Session-3
+=============================================================
+*) InMemory (RAM) AuthenticationManager:- Dev/Test
+
+     ------------------------RAM-------------------------
+     |   username     |  password     |   authorities   |
+     ----------------------------------------------------
+     |    sam         |    sam        |   ADMIN         |
+     |    syed        |    syed       |   EMPLOYEE      |
+     |    jai         |    jai        |   STUDENT       |
+     ----------------------------------------------------
+
+*) Ex: HomeController (class)
+ -------------------------------------------------------------------
+    URL                      UI                       Access Details
+ -------------------------------------------------------------------
+   /home                  HomePage.html       (permitAll)every one can access
+   /welcome               WelcomePage.html    (authenticated) only login users
+						[No Role required]
+   /admin                 AdminPage.html      (hasAuthority[ADMIN]) login + role-ADMIN
+   /emp                   EmployeePage.html   (hasAuthority[EMPLOYEE]) login + role-EMPLOYEE
+   /std                   StudentPage.html    (hasAuthority[STUDENT]) login + role-STUDENT
+
+==================================================================================
+code
+1. Name : SpringBootSecurityInMemoryAuth
+   Dep  : Spring web,  Spring Security, DevTools, thymeleaf
+
+2. Controller class
+package in.nareshit.raghu.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HomeController {
+
+	@GetMapping("/home")
+	public String showHome() {
+		return "HomePage";
+	}
+	
+	@GetMapping("/welcome")
+	public String showWelcome() {
+		return "WelcomePage";
+	}
+	
+	@GetMapping("/admin")
+	public String showAdmin() {
+		return "AdminPage";
+	}
+	
+	@GetMapping("/emp")
+	public String showEmp() {
+		return "EmployeePage";
+	}
+	
+	@GetMapping("/std")
+	public String showStd() {
+		return "StudentPage";
+	}
+	
+	@GetMapping("/denied")
+	public String showDenied() {
+		return "DeniedPage";
+	}
+	
+}
+
+3. UI Pages:
+
+HomePage.html
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>WELCOME TO HOME PAGE(NO SECURITY)</h3>
+</body>
+</html>
+
+WelcomePage.html
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>WELCOME PAGE AFTER LOGIN SUCCESS</h3>
+<a th:href="@{/logout}">LOGOUT</a>
+</body>
+</html>
+
+AdminPage.html
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>ADMIN PAGE ONLY</h3>
+<a th:href="@{/logout}">LOGOUT</a>
+</body>
+</html>
+
+EmployeePage.html
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>EMPLOYEE PAGE ONLY</h3>
+<a th:href="@{/logout}">LOGOUT</a>
+</body>
+</html>
+
+StudentPage.html
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>STUDENT PAGE ONLY</h3>
+<a th:href="@{/logout}">LOGOUT</a>
+</body>
+</html>
+
+DeniedPage.html
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>NO ACCESS PROVIDE TO YOU, PLEASE GOTO WELCOME</h3>
+<a th:href="@{/welcome}">WELCOME</a> |
+<a th:href="@{/logout}">LOGOUT</a>
+</body>
+</html>
+
+*) SecurityConfig.java
+package in.nareshit.raghu.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+@EnableWebSecurity
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.inMemoryAuthentication().withUser("sam").password("{noop}sam").authorities("ADMIN");
+		auth.inMemoryAuthentication().withUser("syed").password("{noop}syed").authorities("EMPLOYEE");
+		auth.inMemoryAuthentication().withUser("jai").password("{noop}jai").authorities("STUDENT");
+	}
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		//URL-AccessType
+		http.authorizeRequests()
+		.antMatchers("/home").permitAll()
+		.antMatchers("/welcome").authenticated()
+		.antMatchers("/admin").hasAuthority("ADMIN")
+		.antMatchers("/emp").hasAuthority("EMPLOYEE")
+		.antMatchers("/std").hasAuthority("STUDENT")
+
+		//LoginForm Details
+		.and()
+		.formLogin()
+		.defaultSuccessUrl("/welcome", true)
+		
+		//Logout Details
+		.and()
+		.logout()
+		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+		
+		//exception Details
+		.and()
+		.exceptionHandling()
+		.accessDeniedPage("/denied")
+		;
+		
+	}
+	
+}
+==============================================================

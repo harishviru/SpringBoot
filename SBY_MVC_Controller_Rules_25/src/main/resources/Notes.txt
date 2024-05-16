@@ -1,0 +1,239 @@
+
+               ---Rules to write Controller class in Spring WEB MVC ----
+                 __________________________________________________
+                 
+                 
+  1)Every Controler class must be public and should have one annotation @controller
+  
+   Ex :
+   ---
+         import org.springframework.stereotype.Controller;
+         @Controller
+         public class StudentController {
+             // methods
+         }
+   
+   
+  2) Every Controller#Method must have URL and Method Type(Http Method Type).
+   That is provided using Annotation :
+   @RequestMapping(value="/URL",method=RequestMethod.__)
+   
+   Ex:
+   ---
+        Controller class :
+        -----------------
+          import org.springframework.stereotype.Controller;
+          import org.springframework.web.bind.annotation.RequestMapping;
+          import org.springframework.web.bind.annotation.RequestMethod;
+
+          @Controller
+          public class StudentController {
+
+	
+          	//@RequestMapping(value="/show",method = RequestMethod.GET)
+          	@RequestMapping("/show")
+          	public String showA() {
+          		return "Home";
+          	}
+          }     
+     Home.jsp:
+     --------
+     <html>
+     <body>
+       <h2> Welcome to Home Page</h2>
+    </body>
+    </html>     
+  
+ 
+3) URL is case-sensitive, Path should never be duplicated. 
+--EX--
+  @Controller
+ class HomeController {
+  @RequestMapping(value = "/home")
+	public String showA() {
+		return "Home";
+	}
+
+    @RequestMapping(value = "/home")
+	public String showB() {
+		return "Home";
+	}
+
+ }
+
+Note:
+----
+Caused by: java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'homeController' method 
+             com.har.journey.controller.HomeController#showB() to { [/register]}: 
+             There is already 'homeController' bean method com.har.journey.controller.HomeController#showA() mapped.
+          
+ 
+4) Same URL(PATH) can be used at multiple method,
+   but Combination of URL+MethodType must be unique.
+
+ex: 
+@Controller
+public class HomeController {
+
+	@RequestMapping(value = "/home")
+	public String showA() {
+		return "Home";
+	}	
+ 
+	@RequestMapping(value = "/home",method = RequestMethod.POST)
+	public String showB() {
+		return "Home";
+	}
+
+} 
+
+
+5) If we do not specify any method Type then default is GET type.
+
+    @RequestMapping   
+	public String showC() {
+		return "Home";
+	}
+
+6) We can even provide URL at controller class level using @RequestMapping
+  (but not method type).
+  It is recomanded if multiple controller are exist in application.
+
+Ex :
+EmployeeController
+
+@Controller
+@RequestMapping("/emp")
+public class EmployeeController {
+
+	
+	@RequestMapping("/register")
+	//@RequestMapping("/empregister")
+	public String showReg() {
+		return "EmpRegister";
+	}
+}
+  
+AdminController :
+
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
+
+	
+	@RequestMapping("/register")
+	//@RequestMapping("/adminregister")
+	public String showReg() {
+		return "AdminRegister";
+	}
+}   
+
+URL's : http://localhost:9090/admin/register
+        http://localhost:9090/emp/register
+
+
+ 7)*** We can use same path at class level and even method level too...
+@Controller
+@RequestMapping("/data")
+public class ProductController {
+
+	
+	  @RequestMapping("/data")
+	  public String showProdData() {
+		return "Home"; 
+	  } 
+}
+Req#--->  http://localhost:9090/data/data  
+
+
+8)** We can even define Controller#method without path, then default is set to '/'
+  *** @RequestMapping must be provided (but no path and no method type)
+--ex--
+@Controller
+class HomeController {
+
+   @RequestMapping   
+	public String showC() {
+		return "Home";
+	}
+}	
+
+*)Note:
+     @RequestMapping  (equals to)
+     @RequestMapping("/")  (equals to)
+     @RequestMapping(value="/", method=RequestMethod.GET)
+  
+ 9) We can provide multiple paths for one method even..
+
+For Ex:  /vhome, /login, /logout ---> UserLoginPage 
+  
+ @Controller
+public class UserController {
+
+	  //@RequestMapping(value={"/home","/login","/logout"})
+	  @RequestMapping({"/vhome","/login","/logout"})
+	  public String showLogin() { 
+	    return "UserLoginPage";
+	  } 
+}     
+
+10) We can even provide two method type for one Controller#method.
+--ex--
+ @Controller
+public class UserController {
+
+ @RequestMapping(value="/phome",method={
+		       RequestMethod.GET,
+		       RequestMethod.POST
+		  })
+	  public  String showLogin2() { 
+		    return "UserLoginPage";
+	 } 
+}
+*)Note: If we enter /phome with GET (or) /phome with POST type
+	then  UserController#showLogin is called.
+	
+	
+11) Controller class can have a method without @RequestMapping annotation
+   that behaves like normal method, that can never be executed by FC for 
+   any request.
+
+--ex--
+@Controller
+class UserController {
+  // (Req methods...)
+      private void test() {
+		  
+	  }
+}	
+	 
+12) New and Short Annotations.
+
+ GET     : @GetMapping("/path")
+ POST    : @PostMapping("/path")
+ PUT     : @PutMapping("/path")
+ DELETE  : @DeleteMapping("/path")
+ PATCH   : @PatchMapping("/path")
+
+ @GetMapping("/path") ==> @RequestMapping(value="/path",method=RequestMethod.GET)
+
+13) Spring boot, web server default port number is : 8080.
+   HTTP Default port number is : 80
+
+if we set port number as 80 then need not to provide 80 in URL 
+ie
+  http://localhost:80/home
+  http://localhost/home
+Note : we can set port number like server.port=80
+
+14) To define welcome/home page just write controller#method with path '/'
+    and return page name.
+
+@Controller
+public class HomeController  {
+  @RequestMapping("/")
+  public String showHome() {
+    return "Home";
+  }
+}	 
+	 

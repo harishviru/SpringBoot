@@ -1,0 +1,11 @@
+#To get JOB_INSTANCE_ID   : batch_job_instance 
+select JOB_INSTANCE_ID  from batch_job_instance bji where bji.JOB_NAME ='jobA' order by JOB_INSTANCE_ID
+
+#To get JOB_EXECUTION_ID  :  batch_job_execution 
+select JOB_EXECUTION_ID  from batch_job_execution bje 
+where JOB_INSTANCE_ID in (select JOB_INSTANCE_ID  from batch_job_instance bji where bji.JOB_NAME ='jobA' order by JOB_INSTANCE_ID )
+
+# To get Step details like STEP_NAME ,START_TIME ,END_TIME ,STATUS
+select STEP_NAME ,START_TIME ,END_TIME ,STATUS  from batch_step_execution bse where JOB_EXECUTION_ID in (select JOB_EXECUTION_ID  from batch_job_execution bje 
+where JOB_INSTANCE_ID in (select JOB_INSTANCE_ID  from batch_job_instance bji where bji.JOB_NAME ='jobA' order by JOB_INSTANCE_ID )
+)

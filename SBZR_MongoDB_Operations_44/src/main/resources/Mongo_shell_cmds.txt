@@ -1,0 +1,56 @@
+> show collections
+empl_col
+student
+> show collections
+empl_col
+product
+student
+> db.product.find().pretty();
+{
+        "_id" : ObjectId("6631cf9698286360bddaff82"),
+        "pid" : 1001,
+        "pcode" : "PQR",
+        "p_cost" : 2000,
+        "pcolors" : [
+                "GREEN",
+                "BLUE",
+                "WHITE",
+                "YELLOW",
+                "RED"
+        ],
+        "mcodes" : {
+                "RC100" : 100,
+                "AB12" : 12,
+                "CB50" : 50
+        },
+        "vob" : {
+                "vid" : 101,
+                "vcode" : "V120",
+                "vtype" : "CONTRACT",
+                "vAddrs" : "Hyd"
+        },
+        "cobs" : [
+                {
+                        "cid" : 801,
+                        "cname" : "ABC",
+                        "contact" : "988627191"
+                },
+                {
+                        "cid" : 802,
+                        "cname" : "PQR",
+                        "contact" : "988910134"
+                },
+                {
+                        "cid" : 803,
+                        "cname" : "MNO",
+                        "contact" : "962719298"
+                },
+                {
+                        "cid" : 804,
+                        "cname" : "XYZ",
+                        "contact" : "931041013"
+                }
+        ],
+        "_class" : "com.har.journey.model.Product"
+}
+>

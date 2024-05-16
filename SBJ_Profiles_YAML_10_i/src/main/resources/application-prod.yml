@@ -1,0 +1,4 @@
+my:
+ app:
+  driver: PROD-ORACLE-DRIVER
+  url: PROD-ORACLE-URL

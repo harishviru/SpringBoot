@@ -1,0 +1,92 @@
+
+  --------------------Swagger-----------------
+  
+      <dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+
+--------------------------------Log4J------------------------------
+
+Log4J : Logging For Java Applicaions
+This is basic tools for Logging in any Java Application.
+
+a. Logger    : It activates logging concept for a class.
+               Create this in RestController/Controller classes.
+
+b. Appender  :  Where to print/store log messages?
+            ConsoleAppender(DevOnly), FileAppender (RollingFileAppender),
+                 
+c. Layout    : What is the format of message?
+               PatternLayout : %d, %C, %M, %m, %L,......etc
+
+*)you Must create log4j.properties file only with all keys in that for appender and layout.
+
+SLF4J: Simple Logging Facade for Java
+ It is reducing programmer work by creating appender and layout objects
+ just provide type name and no need to write exact log4j.properties file.
+
+ Normal loadable properties file is ok.
+
+Priority Methods in Logging:
+---DEBUG
+      INFO       <----------
+---WARN
+       ERROR    <----------
+-- FATAL
+
+
+Integer id = ...
+
+log.info(" DATA IS " + id) ;
+
+log.info(" DATA IS {} ", id);  //expression replacement , ie {} is replaced with id value
+
+
+log.info(" DATA ID  {} and Name  {} , App Status is {} ", id, name, status);
+
+./    => current folder location
+
+../   => come back to one step
+
+Q) Which type of Appender type for file spring boot is using?
+A) RollingFileAppender. Ie we provide max file size to a log file, once it is
+   exceeded then create new log file and take backup of old data into compressed zip
+   format.
+
+*) DailyRollingFileAppender : It means create one log file for one day.
+(It is not a good approch in case of multi-user application, in days so many no.of
+      log lines are added ...file size may get incresed, complex to open and read)
+
+-Dlocation=xys
+
+--data=val
+
+------------application.properties-------------------
+# Provide Root Looger
+logging.level.in.nareshit.raghu=INFO
+#logging.level.in.nareshit.raghu.rest=DEBUG
+logging.level.org.springframework=DEBUG
+#logging.level.org.springframework=ERROR
+# Provide Log File name + location
+logging.file.name=E:/mylogs/prodapp.log
+#logging.file.name=./prodapp.log
+#logging.file.name=./mylogs/prodapp.log
+#logging.file.name=../../prodapp.log
+
+#Pass the location key using option arg/VM args while running app.
+#logging.file.name=${logfilelocation}/prodapp.log
+
+# max file size of a log file
+logging.file.max-size=25MB
+# max days you want to store log files
+logging.file.max-history=5
+
+#logging.pattern.file= %d{dd-MM-yy hh:mm:ss} [%p] %C %M %m %n

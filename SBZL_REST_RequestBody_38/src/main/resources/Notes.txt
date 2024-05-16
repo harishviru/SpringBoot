@@ -1,0 +1,103 @@
+
+       @RequestBody |   @RequestHeader | consumes = {MediaType.<Content_Type>} | produces = {MediaType.<Content_Type>}
+ 
+      -----------------------------------------------------------------------------------------------------------------
+*) @RequestBody Annotation:-
+ This concept is used to send Input to RestController#method() as Method parameter
+ like one Model class object.
+
+=> First this annotation read Request Header 'Content-Type'.
+   Based on type Body data is considred and read into Object format.
+
+*) For XML Data, Content-Type  : application/xml   
+*) For JSON Data, Content-Type : application/json  [Default Supported type in Boot]
+
+=> Syntax:
+   @RequestBody  <ClassName>  <objectName>
+
+
+*
+*) Note:
+a) GET Request will not support Body, use POST or PUT type.
+b) Header Param in POSTMAN auto updated based on DropDown Type [JSON,XML...]
+c) send JSON data using Body Section, even JSON- { } also valid (without any keys)
+   that indicates Creating Object using Default values.
+
+d) If we send XML Data, then Boot application throws - 415 UN SUPPORTED MEDIA TYPE
+   Error, to avoid that add below dependency:
+
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+
+also select XML from DropDown that makes : application/xml as Content-Type.
+enter content as:
+<Student>
+ <sid>100</sid>
+ <sname>SAM</sname>
+ <sfee>500.0</sfee>
+</Student>
+
+*) Sending only : <Student> </Student> is also a valid XML content.
+
+*) If we send invalid data that is not matching to variable data type in model class
+  (example : sid-->Integer, but data is "sid": 99.99 or "sid": "ABC")
+  then Http Status is : 400 BAD REQUEST (type conversion problem).
+
+400 -- Wrong DataType
+406 -- Output is not supported (@ResponseBody)
+415 -- Input is not supported (@RequestBody)
+
+Note :
+1)If we want access header then we can use like this @RequestHeader HttpHeaders headers 
+in method parameter.
+Ex :  @RequestHeader HttpHeaders headers In Method Parameter
+
+2)If we want to control 'INPUT' OR 'Content-Type' 
+then we can consumes  attribute in @XXXMapping Annotation  
+Ex : @PostMapping(value="/path",consumes = {MediaType.APPLICATION_JSON_VALUE})
+
+3)If we want to control 'OUTPUT' OR 'Content-Type' 
+then we can produces attribute in @XXXMapping Annotation  
+@PostMapping(value="/path",produces = {MediaType.TEXT_PLAIN_VALUE})
+
+----------------------Date in Model---------------------------------------------
+
+
+public class Message {
+
+  private String text;
+
+  @JsonFormat(pattern = "dd/MM/yyyy")
+  private LocalDate date;
+
+  @JsonFormat(pattern = "hh:mm:ss a")
+  private LocalTime time;
+
+  @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss a")
+  private LocalDateTime timestamp;  //Getter and Setter
+}
+
+JSON :
+------
+{
+ "text": "Hello",
+ "date": "31/12/2019",
+ "time": "11:59:59 PM"
+ "timestamp": "31/12/2019 23:59:59 PM"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

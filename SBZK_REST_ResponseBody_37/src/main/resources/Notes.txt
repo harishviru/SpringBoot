@@ -1,0 +1,128 @@
+
+
+                     MediaType (JSON/XML) Annotations
+		    @RequestBody   and    @ResponseBody
+====================================================================
+*) @RequestBody : It reads Global Data (either XML/JSON) from Http Request Body 
+			Section and converts into Object format, finally given as
+			method parameter. We can also call it as INPUT.
+
+
+*) @ResponseBody : It takes method return type (Object) and converts it into
+             Global Format(either XML/JSON). This data is given to Http Response
+	     Body Section. We can also call it as OUTPUT.
+
+
+Q) What is the difference between @ModelAttribute and @RequestBody?
+A) @ModelAttribute: Converts HTML FORM Data into Object and reads in Controller.
+   @RequestBody: Converts Global Data into Object and Reads in RestController.
+
+
+*)Note: We need not to apply @ResponseBody in RestController code, that is always
+    applied. When we write @RestController, that internally adds @ResponseBody even.
+
+    @RestController = Object cration + @Controller (HTTP Support) + Global Format
+                      + @ResponseBody + (No ViewResolver)..
+
+=> @RequestBody must be added manually when ever it is needed.
+
+
+=> Content-Type is a Header Param, that indicates 
+   what data type exist in Requst/Response Body.
+   In case of String : text/plain
+   For JSON : application/json, for XML : application/xml
+
+   --------------------------------------------------------x----------------------------------------------------
+   		    MediaType (JSON/XML) Annotations
+		    @RequestBody   and    @ResponseBody
+                      --------------------------------
+*) @RequestBody : It reads Global Data (either XML/JSON) from Http Request Body 
+			Section and converts into Object format, finally given as
+			method parameter. We can also call it as INPUT.
+
+
+*) @ResponseBody : It takes method return type (Object) and converts it into
+             Global Format(either XML/JSON). This data is given to Http Response
+	     Body Section. We can also call it as OUTPUT.
+
+
+Q) What is the difference between @ModelAttribute and @RequestBody?
+A) @ModelAttribute: Converts HTML FORM Data into Object and reads in Controller.
+   @RequestBody: Converts Global Data into Object and Reads in RestController.
+
+
+*)Note: We need not to apply @ResponseBody in RestController code, that is always
+    applied. When we write @RestController, that internally adds @ResponseBody even.
+
+    @RestController = Object cration + @Controller (HTTP Support) + Global Format
+                      + @ResponseBody + (No ViewResolver)..
+
+=> @RequestBody must be added manually when ever it is needed.
+
+
+=> Content-Type is a Header Param, that indicates 
+   what data type exist in Requst/Response Body.
+   In case of String : text/plain
+   For JSON : application/json, for XML : application/xml
+===============================================================================  
+
+	Java                               JSON
+	-------------------------------------------
+	String                            -NA-  
+
+        Object                      { "key":val, "key":val,....}
+
+ *) Note : in class variable--> in JSON key
+           variable data -----> value in JSON
+
+      List<String>/Set<String>        [ val, val, val,..... ]	   
+
+      List<T>/Set<T>                  [  { }, { }, { },....]
+
+      Map<K,V>                        { "key":val, "key":val,....}
+
+*) Note: All values in JSON are same data-type for Map
+
+
+
+
+
+A) ResponseEntity is a standard (= Status + Header + Body). Here we can provide
+   specific Status for client machine and any header if they want.
+
+   If we use Direct DataType like String , it indicates only Body. On success,
+   default status is taken as 200/OK, No specific header added.
+
+
+	=================================================================
+		   Spring Boot REST - Content Negotiation
+
+=> by default , Spring Boot REST applications gives JSON is the default output format.
+=> To enable XML concept add below dependency,
+
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+
+and also send One Request Header Param :  Accept = application/xml
+
+--code---
+@RestController
+public class EmployeeRestController {
+
+	@GetMapping("/b")
+	public Employee showB() {
+		return new Employee(10,"A");
+	}
+}
+----------------POSTMAN---------------------------
+GET  http://localhost:8080/b      SEND
+          Header
+   [Accept]      [application/xml]
+-------------------------------------------------
+
+*) Note : If above XML Dependency is not added in Spring Boot REST App, then
+   if we try to do 'Content Negotiation' using Accept = application/xml
+   then Spring Boot gives Http Status - 406 Not Acceptable.
+  

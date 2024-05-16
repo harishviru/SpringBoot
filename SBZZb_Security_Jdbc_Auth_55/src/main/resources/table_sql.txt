@@ -1,0 +1,33 @@
+ram    :$2a$10$5pIYkxOoSubZMc7T9SywN.DvROLinWDZDYDVDmjWDulfpWg.6C6s6
+
+siva  :$2a$10$Gn5D6IwbLMRmaeY2KbEfZuXy9CwxcC57/wPrxZak3U2F1rqS2Nm0m
+
+jai  : $2a$10$1k1E0dzB6.tr6rXEbNh23eZW.eorktNUr7ebFbLDkkAPGn4NATSjO
+
+SQL#Create:
+-----------------
+CREATE TABLE `user_tab` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `enabled` bit(1) NOT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `role` varchar(255) DEFAULT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+
+SQL#INSERT
+--------------------
+
+
+INSERT INTO user_tab
+(username,password,`role`,enabled)
+VALUES('ram','$2a$10$5pIYkxOoSubZMc7T9SywN.DvROLinWDZDYDVDmjWDulfpWg.6C6s6','ADMIN',1);
+
+
+INSERT INTO user_tab
+(username,password,`role`,enabled)
+VALUES('siva','$2a$10$Gn5D6IwbLMRmaeY2KbEfZuXy9CwxcC57/wPrxZak3U2F1rqS2Nm0m','EMPLOYEE',1);
+
+INSERT INTO user_tab
+(username,password,`role`,enabled)
+VALUES('jai','$2a$10$1k1E0dzB6.tr6rXEbNh23eZW.eorktNUr7ebFbLDkkAPGn4NATSjO','STUDENT',1);

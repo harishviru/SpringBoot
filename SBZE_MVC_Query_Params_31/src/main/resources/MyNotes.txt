@@ -1,0 +1,49 @@
+Controller class Method :
+
+@GetMapping("/show")
+	  public String showData(
+			     @RequestParam("eid") int id,
+			     @RequestParam("ename") String ename,
+			     Model model
+			  ) {
+		  
+		   model.addAttribute("eid", id);
+		   model.addAttribute("ename", ename);
+		  return "EmpData";
+	  }
+
+
+#01. http://localhost:9090/show?eid=90&ename=abc
+
+Output :
+ Data : 90 - abc 
+
+ #02. http://localhost:9090/show?eid=90&ename=abc&ename=def&ename=gh
+
+** If same key is repeated with different values then read that as Array/ListType
+  using RequestParam Annotation.
+
+In case of servlets it is equals to:
+String[] data = request.getParameterValues("prjs");
+
+
+Output :
+ Data : 90 - abc,def,gh 
+
+ #03. http://localhost:9090/show?eid=90&ename=abc&esal=10
+
+ If we pass extra params which are not present in code, they are ignored.
+   No Error/No Exception.
+
+#04.  http://localhost:9090/show?eid=90
+
+if required key is missed then 
+MissingServletRequestParameterException: Required request parameter 'ename' for method parameter type String is not present
+
+
+#05 http://localhost:9090/show?eid=abc&ename=def
+If we send wrong datatype value, then Http Status is : 400 BAD REQUEST
+  (Problem related to data).
+
+ MethodArgumentTypeMismatchException: Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "abc"]
+
